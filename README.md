@@ -1,29 +1,5 @@
 # Serenity Journal
 
-## Requirements
-- Node v16.19.1
-
-## Scripts
-
-Setup
-```shell
-yarn
-cd functions
-yarn
-```
-
-Develop
-
-```shell
-yarn dev
-```
-
-Deploy
-
-```shell
-yarn deploy
-```
-
 <a href="http://react-pwa.surenatoyan.com/" target="_blank" rel="noreferrer">
  <img src="./public/cover.png" title="Base App">
 </a>
@@ -36,6 +12,40 @@ yarn deploy
 
 This project (a GitHub template) is an opinionated setup for modern web applications.
 It's a combination of essential (and minimal) libraries/components/utils/etc., which developers usually need during the process of making modern React applications.
+
+## Usage
+
+Requirements: Node v16
+
+Install dependencies:
+
+```bash
+yarn && cd functions && yarn && cd ..
+```
+
+In order to run it in development, run:
+
+```bash
+yarn dev
+```
+
+In order to do a production build, run:
+
+```bash
+yarn build
+```
+
+Deploy
+```bash
+yarn deploy
+```
+
+There are two more scripts:
+
+`preview` and `https-preview`
+
+- `preview` command will boot up local static web server that serves the files from `dist` folder. It's an easy way to check if the production build looks OK in your local environment.
+- `https-preview` is the same, but with HTTPS. It's handy for testing your PWA capabilities in your local environment.
 
 ## Motivation
 
@@ -258,39 +268,6 @@ The last one is a router-based switcher. All routes are defined in [src/routes](
   and check `https://localhost` in your browser.
 
   NOTE: first time it will ask you about installing localhost certificate. For more info check [this](https://github.com/daquinoaldo/https-localhost#root-required)
-
-## Usage
-
-You can use this template by just pressing `Use this template`.
-
-<img src="./public/use-template.png" width="300" title="Use this temaplte">
-
-Or you can fork/clone it.
-
-Install dependencies:
-
-```bash
-npm install # or yarn
-```
-
-In order to run it in development, run:
-
-```bash
-npm run dev # or yarn dev
-```
-
-In order to do a production build, run:
-
-```bash
-npm run build # yarn build
-```
-
-There are two more scripts:
-
-`preview` and `https-preview`
-
-- `preview` command will boot up local static web server that serves the files from `dist` folder. It's an easy way to check if the production build looks OK in your local environment.
-- `https-preview` is the same, but with HTTPS. It's handy for testing your PWA capabilities in your local environment.
 
 ## [Live Demo](https://react-pwa.surenatoyan.com/)
 
