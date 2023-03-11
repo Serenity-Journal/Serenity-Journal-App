@@ -12,6 +12,10 @@ import Notifications from '@/sections/Notifications';
 import SW from '@/sections/SW';
 import Sidebar from '@/sections/Sidebar';
 
+import { API_URL } from './api';
+
+console.log('API URL: ', API_URL);
+
 function App() {
   return (
     <Fragment>
