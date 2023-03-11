@@ -1,3 +1,22 @@
+# Serenity Journal
+
+## Requirements
+- Node v16.19.1
+
+## Scripts
+
+Develop
+
+```shell
+yarn dev
+```
+
+Deploy
+
+```shell
+yarn deploy
+```
+
 <a href="http://react-pwa.surenatoyan.com/" target="_blank" rel="noreferrer">
  <img src="./public/cover.png" title="Base App">
 </a>
