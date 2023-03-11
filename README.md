@@ -5,6 +5,13 @@
 
 ## Scripts
 
+Setup
+```shell
+yarn
+cd functions
+yarn
+```
+
 Develop
 
 ```shell
