@@ -6,12 +6,12 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { withErrorHandler } from '@/error-handling';
 import AppErrorBoundaryFallback from '@/error-handling/fallbacks/App';
 import Pages from '@/routes/Pages';
-import Header from '@/sections/Header';
+// import Header from '@/sections/Header';
 import HotKeys from '@/sections/HotKeys';
 import Notifications from '@/sections/Notifications';
 import SW from '@/sections/SW';
-import Sidebar from '@/sections/Sidebar';
 
+// import Sidebar from '@/sections/Sidebar';
 import { API_URL } from './api';
 
 console.log('API URL: ', API_URL);
@@ -24,8 +24,8 @@ function App() {
       <HotKeys />
       <SW />
       <BrowserRouter>
-        <Header />
-        <Sidebar />
+        {/* <Header /> */}
+        {/* <Sidebar /> */}
         <Pages />
       </BrowserRouter>
     </Fragment>
