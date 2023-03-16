@@ -21,6 +21,12 @@ const routes: Routes = {
     title: 'Login',
     icon: HomeIcon,
   },
+  [Pages.LoginAlt]: {
+    component: asyncComponentLoader(() => import('@/pages/Register')),
+    path: '/register',
+    title: 'Register',
+    icon: HomeIcon,
+  },
   [Pages.Home]: {
     component: asyncComponentLoader(() => import('@/pages/Home')),
     path: '/home',
