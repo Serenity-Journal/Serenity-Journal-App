@@ -109,9 +109,15 @@ function Page1() {
           setSending(false);
         })
         .catch((err) => {
-          console.error(err);
           setSending(false);
-          alert('Error sending message');
+          console.error(err);
+          if (err?.response?.data === 'Chat GPT failure') {
+            alert('Error communicating with ChatGPT');
+          } else if (err?.response?.data === 'Unable to add journal to database') {
+            alert('Database error');
+          } else {
+            alert('Error sending message');
+          }
         });
     } else {
       alert('Journal entry cannot be blank');
