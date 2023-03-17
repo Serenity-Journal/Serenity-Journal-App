@@ -46,6 +46,7 @@ function Page1() {
   const [user, setUser] = useState<User | undefined>(undefined);
   const [journals, setJournals] = useState<Array<Journal>>([]);
   const [text, setText] = useState<string>('');
+  const [sending, setSending] = useState<boolean>(false);
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
@@ -81,14 +82,17 @@ function Page1() {
         title,
         text,
       };
+      setSending(true);
       axios
         .post(journalAPIURL, data)
         .then((res) => {
           console.log('journal submit response', res);
           setText('');
+          setSending(false);
         })
         .catch((err) => {
           console.error(err);
+          setSending(false);
           alert('Error sending message');
         });
     } else {
@@ -132,6 +136,7 @@ function Page1() {
             {/*Journal Entry*/}
             <>
               <TextareaAutosize
+                disabled={sending}
                 placeholder={'Release your emotions here'}
                 value={text}
                 onChange={(event) => {
@@ -152,6 +157,7 @@ function Page1() {
                 }}
               />
               <Button
+                disabled={sending}
                 onClick={() => {
                   submitJournalEntry();
                 }}
@@ -164,7 +170,7 @@ function Page1() {
                 }}
                 sx={{ mt: 3, mb: 2 }}
               >
-                Send
+                {sending ? 'Please wait...' : 'Send'}
               </Button>
             </>
           </Container>
