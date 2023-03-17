@@ -169,118 +169,168 @@ function Page1() {
             }}
           >
             <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                width: '100%',
-                maxWidth: getMaxWidth(1000.0),
-                flexGrow: 1,
-                overflowY: 'scroll',
-                rowGap: '10px',
-                marginTop: '10px',
-                marginBottom: '10px',
-              }}
-            >
-              {journals
-                .filter((journal) => journal.role === 'user')
-                .map((journal) => {
-                  const chatGPTResponseJournals = journals.filter(
-                    (cj) => cj.role === 'assistant' && cj.createdAt === journal.createdAt,
-                  );
-                  let chatGPTResponseJournal;
-                  if (chatGPTResponseJournals && chatGPTResponseJournals.length > 0) {
-                    chatGPTResponseJournal = chatGPTResponseJournals[0];
-                  }
-
-                  return (
-                    <div key={journal.id}>
-                      <Typography sx={{ fontStyle: 'italic' }}>
-                        {formatDate(new Date(journal.createdAt))}
-                      </Typography>
-                      <div
-                        id={journal.createdAt.toString()}
-                        key={journal.id}
-                        style={{
-                          display: 'flex',
-                          flexDirection: isMobileStyle ? 'column' : 'row',
-                          background: 'rgba(255,255,255,0)',
-                        }}
-                      >
-                        <Typography style={{ flexGrow: isMobileStyle ? 0 : 1 }}>
-                          {journal.content}
-                        </Typography>
-                        {chatGPTResponseJournal && (
-                          <div
-                            style={{
-                              background: 'rgba(255,255,255,0.27)',
-                              width: isMobileStyle ? '100%' : '400px',
-                              padding: '5px',
-                              borderRadius: '10px',
-                            }}
-                          >
-                            {chatGPTResponseJournal.content}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              <div ref={messagesEndRef} />
-            </div>
-            {/*Journal Entry*/}
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                width: '100%',
-                maxWidth: getMaxWidth(1000),
-                height: 'auto',
-              }}
-            >
-              <TextareaAutosize
-                disabled={sending}
-                placeholder={'Release your emotions here'}
-                value={text}
-                onChange={(event) => {
-                  setText(event.target.value);
-                }}
                 style={{
-                  fontFamily: 'monospace',
-                  fontWeight: 700,
-                  // marginTop: '10px',
+                  display: 'flex',
+                  flexDirection: isMobileStyle ? 'column' : 'row',
                   width: '100%',
-                  maxWidth: getMaxWidth(1000),
-                  minHeight: '5rem',
-                  background: 'rgba(0, 0, 0, 0)',
-                  resize: 'none',
-                  color: 'black',
-                  borderColor: 'black',
-                  borderRadius: '6px',
-                  borderStyle: 'solid',
+                  maxWidth: getMaxWidth(1000.0),
+                  flexGrow: 1,
+                  overflowY: 'scroll',
+                  // rowGap: '10px',
+                  // columnGap: '2px',
+                  marginTop: '10px',
+                  marginBottom: '10px',
                 }}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter') {
-                    submitJournalEntry();
-                  }
-                }}
-              />
-              <Button
-                disabled={sending}
-                onClick={() => {
-                  submitJournalEntry();
-                }}
-                type="submit"
-                fullWidth
-                variant="contained"
-                style={{
-                  maxWidth: getMaxWidth(1000),
-                  // marginTop: '10px',
-                }}
-                sx={{ mt: 3, mb: 2 }}
-              >
-                {sending ? 'Please wait...' : 'Send'}
-              </Button>
+            >
+              <div style={{
+                borderTopLeftRadius: '50px',
+                borderBottomLeftRadius: isMobileStyle ? '0px' : '50px',
+                borderTopRightRadius: isMobileStyle ? '50px' : '0.0px',
+                borderBottomRightRadius: isMobileStyle ? '0px' : '0.0px',
+                background: '#fdfbfc',
+                flex: 0.49,
+                paddingLeft: isMobileStyle ? '5px' : '50px',
+                paddingRight: isMobileStyle ? '5px' : '50px',
+                paddingBlockStart: isMobileStyle ? '50px' : '50px',
+                paddingBlockEnd: isMobileStyle ? '0px' : '50px',
+              }}>
+                Left Page
+              </div>
+              <div style={{
+                flex: 0.006,
+                // background: '#dadada'
+                backgroundImage: "linear-gradient(to right, white, rgba(200, 200, 200, 1.0), white)"
+              }}>
+              </div>
+              <div style={{
+                borderTopRightRadius: isMobileStyle ? '0px' : '50px',
+                borderBottomRightRadius: '50px',
+                borderTopLeftRadius: isMobileStyle ? '0px' : '0.0px',
+                borderBottomLeftRadius: isMobileStyle ? '50px' : '0.0px',
+                background: '#fdfbfc',
+                flex: 0.49,
+                paddingLeft: isMobileStyle ? '5px' : '50px',
+                paddingRight: isMobileStyle ? '5px' : '50px',
+                paddingBlockStart: isMobileStyle ? '0px' : '50px',
+                paddingBlockEnd: '50px',
+              }}>
+                Right Page
+              </div>
+
             </div>
+            {/*<div*/}
+            {/*  style={{*/}
+            {/*    display: 'flex',*/}
+            {/*    flexDirection: 'column',*/}
+            {/*    width: '100%',*/}
+            {/*    maxWidth: getMaxWidth(1000.0),*/}
+            {/*    flexGrow: 1,*/}
+            {/*    overflowY: 'scroll',*/}
+            {/*    rowGap: '10px',*/}
+            {/*    marginTop: '10px',*/}
+            {/*    marginBottom: '10px',*/}
+            {/*  }}*/}
+            {/*>*/}
+            {/*  {journals*/}
+            {/*    .filter((journal) => journal.role === 'user')*/}
+            {/*    .map((journal) => {*/}
+            {/*      const chatGPTResponseJournals = journals.filter(*/}
+            {/*        (cj) => cj.role === 'assistant' && cj.createdAt === journal.createdAt,*/}
+            {/*      );*/}
+            {/*      let chatGPTResponseJournal;*/}
+            {/*      if (chatGPTResponseJournals && chatGPTResponseJournals.length > 0) {*/}
+            {/*        chatGPTResponseJournal = chatGPTResponseJournals[0];*/}
+            {/*      }*/}
+
+            {/*      return (*/}
+            {/*        <div key={journal.id}>*/}
+            {/*          <Typography sx={{ fontStyle: 'italic' }}>*/}
+            {/*            {formatDate(new Date(journal.createdAt))}*/}
+            {/*          </Typography>*/}
+            {/*          <div*/}
+            {/*            id={journal.createdAt.toString()}*/}
+            {/*            key={journal.id}*/}
+            {/*            style={{*/}
+            {/*              display: 'flex',*/}
+            {/*              flexDirection: isMobileStyle ? 'column' : 'row',*/}
+            {/*              background: 'rgba(255,255,255,0)',*/}
+            {/*            }}*/}
+            {/*          >*/}
+            {/*            <Typography style={{ flexGrow: isMobileStyle ? 0 : 1 }}>*/}
+            {/*              {journal.content}*/}
+            {/*            </Typography>*/}
+            {/*            {chatGPTResponseJournal && (*/}
+            {/*              <div*/}
+            {/*                style={{*/}
+            {/*                  background: 'rgba(255,255,255,0.27)',*/}
+            {/*                  width: isMobileStyle ? '100%' : '400px',*/}
+            {/*                  padding: '5px',*/}
+            {/*                  borderRadius: '10px',*/}
+            {/*                }}*/}
+            {/*              >*/}
+            {/*                {chatGPTResponseJournal.content}*/}
+            {/*              </div>*/}
+            {/*            )}*/}
+            {/*          </div>*/}
+            {/*        </div>*/}
+            {/*      );*/}
+            {/*    })}*/}
+            {/*  <div ref={messagesEndRef} />*/}
+            {/*</div>*/}
+            {/*Journal Entry*/}
+            {/*<div*/}
+            {/*  style={{*/}
+            {/*    display: 'flex',*/}
+            {/*    flexDirection: 'column',*/}
+            {/*    width: '100%',*/}
+            {/*    maxWidth: getMaxWidth(1000),*/}
+            {/*    height: 'auto',*/}
+            {/*  }}*/}
+            {/*>*/}
+            {/*  <TextareaAutosize*/}
+            {/*    disabled={sending}*/}
+            {/*    placeholder={'Release your emotions here'}*/}
+            {/*    value={text}*/}
+            {/*    onChange={(event) => {*/}
+            {/*      setText(event.target.value);*/}
+            {/*    }}*/}
+            {/*    style={{*/}
+            {/*      fontFamily: 'monospace',*/}
+            {/*      fontWeight: 700,*/}
+            {/*      // marginTop: '10px',*/}
+            {/*      width: '100%',*/}
+            {/*      maxWidth: getMaxWidth(1000),*/}
+            {/*      minHeight: '5rem',*/}
+            {/*      background: 'rgba(0, 0, 0, 0)',*/}
+            {/*      resize: 'none',*/}
+            {/*      color: 'black',*/}
+            {/*      borderColor: 'black',*/}
+            {/*      borderRadius: '6px',*/}
+            {/*      borderStyle: 'solid',*/}
+            {/*    }}*/}
+            {/*    onKeyDown={(event) => {*/}
+            {/*      if (event.key === 'Enter') {*/}
+            {/*        submitJournalEntry();*/}
+            {/*      }*/}
+            {/*    }}*/}
+            {/*  />*/}
+            {/*  <Button*/}
+            {/*    disabled={sending}*/}
+            {/*    onClick={() => {*/}
+            {/*      submitJournalEntry();*/}
+            {/*    }}*/}
+            {/*    type="submit"*/}
+            {/*    fullWidth*/}
+            {/*    variant="contained"*/}
+            {/*    style={{*/}
+            {/*      maxWidth: getMaxWidth(1000),*/}
+            {/*      // marginTop: '10px',*/}
+            {/*    }}*/}
+            {/*    sx={{ mt: 3, mb: 2 }}*/}
+            {/*  >*/}
+            {/*    {sending ? 'Please wait...' : 'Send'}*/}
+            {/*  </Button>*/}
+            {/*</div>*/}
           </Container>
         </>
       ) : (
