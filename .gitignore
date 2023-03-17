@@ -7,6 +7,7 @@
 .firebase/functions.*
 .firebase/function.*.*
 .firebase/function.*
+.firebase/*.cache
 
 # Logs
 logs
