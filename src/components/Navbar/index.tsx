@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 
 // import AdbIcon from '@mui/icons-material/Adb';
-import { Create } from '@mui/icons-material';
+// import { Create } from '@mui/icons-material';
 import AppBar from '@mui/material/AppBar';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
@@ -57,7 +57,7 @@ function ResponsiveAppBar() {
         // const uid = user.uid;
         // ...
         setUser(user);
-        console.log(user);
+        // console.log(user);
       } else {
         // User is signed out
         // ...
@@ -70,7 +70,7 @@ function ResponsiveAppBar() {
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <Create sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+          {/*<Create sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />*/}
           <Typography
             variant="h6"
             noWrap
@@ -125,7 +125,7 @@ function ResponsiveAppBar() {
           {/*        ))}*/}
           {/*    </Menu>*/}
           {/*</Box>*/}
-          <Create sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
+          {/*<Create sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />*/}
           <Typography
             variant="h5"
             noWrap
