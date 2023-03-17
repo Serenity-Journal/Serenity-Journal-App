@@ -1,6 +1,6 @@
 import React from 'react';
 
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import QuestionMarkOutlinedIcon from '@mui/icons-material/Key';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -12,7 +12,7 @@ import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, sendPasswordResetEmail } from 'firebase/auth';
 
 import Meta from '@/components/Meta';
 import Navbar from '@/components/Navbar';
@@ -26,35 +26,31 @@ function Page1() {
     const data = new FormData(event.currentTarget);
     console.log({
       email: data.get('email'),
-      password: data.get('password'),
     });
 
     const email = data.get('email') as string;
-    const password = data.get('password') as string;
 
-    if (!email || !password) {
-      alert('Please fill in all fields');
+    if (!email) {
+      alert('Please provide an email');
       return;
     }
 
-    signInWithEmailAndPassword(auth, email, password)
+    sendPasswordResetEmail(auth, email)
       .then(() => {
-        // Signed in
-        // const user = userCredential.user;
-        // ...
+        alert('Reset Password Email Sent!');
         location.href = '/';
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        alert('Invalid email or password');
         console.error(errorCode, errorMessage);
+        alert('Invalid email provided');
       });
   };
 
   return (
     <>
-      <Meta title="login" />
+      <Meta title="reset password" />
       <Navbar />
       <Container>
         <CssBaseline />
@@ -67,10 +63,10 @@ function Page1() {
           }}
         >
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
+            <QuestionMarkOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            Reset password
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
@@ -83,28 +79,13 @@ function Page1() {
               autoComplete="email"
               autoFocus
             />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-            />
             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-              Sign In
+              Reset
             </Button>
             <Grid container>
-              <Grid item xs>
-                <Link href="/reset-password" variant="body2" style={{ color: 'white' }}>
-                  Forgot password?
-                </Link>
-              </Grid>
               <Grid item>
-                <Link href="/register" variant="body2" style={{ color: 'white' }}>
-                  {"Don't have an account? Sign Up"}
+                <Link href="/login" variant="body2" style={{ color: 'white' }}>
+                  {'Back to sign in'}
                 </Link>
               </Grid>
             </Grid>

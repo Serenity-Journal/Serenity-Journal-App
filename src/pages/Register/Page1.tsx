@@ -1,6 +1,6 @@
 import React from 'react';
 
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Person2OutlinedIcon from '@mui/icons-material/Person2Outlined';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -12,7 +12,7 @@ import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
 
 import Meta from '@/components/Meta';
 import Navbar from '@/components/Navbar';
@@ -27,34 +27,40 @@ function Page1() {
     console.log({
       email: data.get('email'),
       password: data.get('password'),
+      confirmPassword: data.get('confirm-password'),
     });
 
     const email = data.get('email') as string;
     const password = data.get('password') as string;
+    const confirmPassword = data.get('confirm-password') as string;
 
-    if (!email || !password) {
+    if (!email || !password || !confirmPassword) {
       alert('Please fill in all fields');
       return;
     }
 
-    signInWithEmailAndPassword(auth, email, password)
+    if (password !== confirmPassword) {
+      alert('Passwords do not match');
+      return;
+    }
+
+    createUserWithEmailAndPassword(auth, email, password)
       .then(() => {
         // Signed in
         // const user = userCredential.user;
-        // ...
         location.href = '/';
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        alert('Invalid email or password');
+        alert('Error creating account. Please ensure email and password are valid.');
         console.error(errorCode, errorMessage);
       });
   };
 
   return (
     <>
-      <Meta title="login" />
+      <Meta title="register" />
       <Navbar />
       <Container>
         <CssBaseline />
@@ -67,10 +73,10 @@ function Page1() {
           }}
         >
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
+            <Person2OutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            Sign up
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
@@ -93,18 +99,23 @@ function Page1() {
               id="password"
               autoComplete="current-password"
             />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="confirm-password"
+              label="Confirm Password"
+              type="password"
+              id="confirm-password"
+              autoComplete="confirm-current-password"
+            />
             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-              Sign In
+              Sign Up
             </Button>
             <Grid container>
-              <Grid item xs>
-                <Link href="/reset-password" variant="body2" style={{ color: 'white' }}>
-                  Forgot password?
-                </Link>
-              </Grid>
               <Grid item>
-                <Link href="/register" variant="body2" style={{ color: 'white' }}>
-                  {"Don't have an account? Sign Up"}
+                <Link href="/login" variant="body2" style={{ color: 'white' }}>
+                  {'Have an account? Sign In'}
                 </Link>
               </Grid>
             </Grid>
