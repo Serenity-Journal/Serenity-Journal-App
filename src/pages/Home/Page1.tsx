@@ -21,6 +21,7 @@ import {
 import { API_URL } from '@/api';
 import Meta from '@/components/Meta';
 import Navbar from '@/components/Navbar';
+import useWindowDimensions from '@/hooks/useWindowDimensions';
 import firebaseApp from '@/utils/firebase';
 
 interface JournalUser {
@@ -30,12 +31,13 @@ interface JournalUser {
 }
 
 interface Journal {
+  id: string;
   createdAt: number;
   updatedAt: number;
-  text: string;
+  role: string;
+  content: string;
   title: string;
   user?: JournalUser;
-  response?: boolean;
 }
 
 function Page1() {
@@ -45,6 +47,15 @@ function Page1() {
   const [user, setUser] = useState<User | undefined>(undefined);
   const [journals, setJournals] = useState<Array<Journal>>([]);
   const [text, setText] = useState<string>('');
+  const [sending, setSending] = useState<boolean>(false);
+  const { width } = useWindowDimensions();
+  const [maxWidth, setMaxWidth] = useState('280px');
+
+  useEffect(() => {
+    if (width) {
+      setMaxWidth(`${Math.min((width || 280) - 16, 600)}px`);
+    }
+  }, [width]);
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
@@ -66,29 +77,47 @@ function Page1() {
         journalData.id = doc?.id || 'no id';
         newJournals.push(journalData as Journal);
       });
-      newJournals = newJournals.sort((a, b) => a.createdAt - b.createdAt);
+      newJournals = newJournals.sort((a, b) => a.id.localeCompare(b.id));
       setJournals(newJournals);
     });
   }, [db]);
 
   function submitJournalEntry() {
     if (user && text) {
+      const millis = Date.now();
+      const currentTime = Math.floor(millis);
       const journalAPIURL = `${API_URL}/journal`;
       const title = 'title';
-      const data = {
-        user,
-        title,
-        text,
+      const postData: Journal = {
+        user: user as JournalUser,
+        title: title,
+        content: text,
+        role: 'user',
+        createdAt: currentTime,
+        updatedAt: currentTime,
+        id: currentTime.toString() + '.u',
       };
+      setSending(true);
       axios
-        .post(journalAPIURL, data)
+        .post(journalAPIURL, {
+          ...postData,
+          messages: journals,
+        })
         .then((res) => {
           console.log('journal submit response', res);
           setText('');
+          setSending(false);
         })
         .catch((err) => {
+          setSending(false);
           console.error(err);
-          alert('Error sending message');
+          if (err?.response?.data === 'Chat GPT failure') {
+            alert('Error communicating with ChatGPT');
+          } else if (err?.response?.data === 'Unable to add journal to database') {
+            alert('Database error');
+          } else {
+            alert('Error sending message');
+          }
         });
     } else {
       alert('Journal entry cannot be blank');
@@ -101,14 +130,28 @@ function Page1() {
         <>
           <Meta title="home" />
           <Navbar />
-          <Container style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Container
+            style={{
+              width: '100%',
+              padding: '0px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              height: '100%',
+            }}
+          >
             {/*Journals*/}
             <div
               style={{
                 display: 'flex',
                 flexDirection: 'column',
                 width: '100%',
-                maxWidth: '600px',
+                maxWidth: maxWidth,
+                flexGrow: 1,
+                overflowY: 'scroll',
+                rowGap: '10px',
+                marginTop: '10px',
+                marginBottom: '10px',
               }}
             >
               {journals.map((journal) => {
@@ -116,21 +159,30 @@ function Page1() {
                   <div
                     key={journal.id}
                     style={{
+                      display: 'flex',
                       background: 'white',
-                      marginTop: '10px',
                     }}
                   >
                     <Typography style={{ color: 'black' }}>
-                      {journal.response ? 'Serenity:' : 'You:'}
+                      {journal.role === 'assistant' ? 'Serenity: ' : 'You: '}
                     </Typography>
-                    <Typography style={{ color: 'black' }}>{journal.text}</Typography>
+                    <Typography style={{ color: 'black' }}>{journal.content}</Typography>
                   </div>
                 );
               })}
             </div>
             {/*Journal Entry*/}
-            <>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                width: '100%',
+                maxWidth: maxWidth,
+                height: 'auto',
+              }}
+            >
               <TextareaAutosize
+                disabled={sending}
                 placeholder={'Release your emotions here'}
                 value={text}
                 onChange={(event) => {
@@ -139,9 +191,9 @@ function Page1() {
                 style={{
                   fontFamily: 'monospace',
                   fontWeight: 700,
-                  marginTop: '10px',
+                  // marginTop: '10px',
                   width: '100%',
-                  maxWidth: '600px',
+                  maxWidth: maxWidth,
                   minHeight: '5rem',
                 }}
                 onKeyDown={(event) => {
@@ -151,6 +203,7 @@ function Page1() {
                 }}
               />
               <Button
+                disabled={sending}
                 onClick={() => {
                   submitJournalEntry();
                 }}
@@ -158,14 +211,14 @@ function Page1() {
                 fullWidth
                 variant="contained"
                 style={{
-                  maxWidth: '600px',
-                  marginTop: '10px',
+                  maxWidth: maxWidth,
+                  // marginTop: '10px',
                 }}
                 sx={{ mt: 3, mb: 2 }}
               >
-                Send
+                {sending ? 'Please wait...' : 'Send'}
               </Button>
-            </>
+            </div>
           </Container>
         </>
       ) : (

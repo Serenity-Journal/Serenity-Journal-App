@@ -4,6 +4,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const app = express();
 const firebase = require('./firebase');
+const { Configuration, OpenAIApi } = require("openai");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 const allowedOrigins = ['*',
@@ -33,24 +34,98 @@ app.get('/', (req, res) => {
 });
 
 app.post('/journal', async function (request, response) {
+    if (!process.env.OPEN_AI_API_KEY) {
+        console.error("OPEN_AI_API_KEY environment variable not defined");
+        process.exit(1);
+    }
+
+    const configuration = new Configuration({
+        apiKey: process.env.OPEN_AI_API_KEY
+    });
+    const openai = new OpenAIApi(configuration);
+
     const millis = Date.now();
     const currentTime = Math.floor(millis);
 
-    const data = {
+    const newMessageData = {
         user: request?.body?.user,
         title: request?.body?.title,
-        text: request?.body?.text,
+        content: request?.body?.content,
         createdAt: currentTime,
         updatedAt: currentTime,
-        response: false,
+        role: 'user',
     };
 
+    // messages to send to chat GPT
+    const messages = [ {
+        role: 'system',
+        content: 'You are a therapist named Serenity. Respond with therapy.'
+    } ];
+    console.log('previous messages', request?.body?.messages);
+    messages.concat(request?.body?.messages);
+    if (request?.body?.messages) {
+        for (let i = 0; i < request?.body?.messages.length; i++) {
+            const message = request?.body?.messages[i];
+            messages.push({
+                role: message.role,
+                content: message.content,
+            });
+        }
+    }
+    messages.push({
+        role: newMessageData.role,
+        content: newMessageData.content
+    });
+    console.log('messages being sent to ChatGPT', messages);
+    let chatGPTResponse = undefined;
     try {
-        await firebase.db.collection('journal').doc(currentTime.toString()).set(data);
+        const completion = await openai.createChatCompletion({
+            model: 'gpt-3.5-turbo',
+            messages,
+        });
+        if (completion?.data?.choices && completion?.data?.choices?.length > 0) {
+            // console.log('completion text (1)', completion.data.choices[0]);
+            console.log('chat gpt message text', completion?.data?.choices[0].message);
+            if (completion?.data?.choices[0].message) {
+                chatGPTResponse = completion?.data?.choices[0].message?.content;
+            }
+        }
+    } catch (e) {
+        if (e.response) {
+            console.error('chat gpt error response status', e.response.status);
+            console.error('chat gpt error response data', e.response.data);
+            response.status(500).send("Chat GPT failure");
+            return;
+        } else if (e.message) {
+            console.error('chat gpt error response message', e.message);
+            response.status(500).send("Chat GPT failure");
+            return;
+        } else {
+            console.error('chat gpt error', e);
+            response.status(500).send("Chat GPT failure");
+            return;
+        }
+    }
+
+    try {
+        await firebase.db.collection('journal').doc(currentTime.toString() + '.0u').set(newMessageData);
+        if (chatGPTResponse) {
+            const chatGPTMessageData = {
+                createdAt: currentTime,
+                updatedAt: currentTime,
+                role: 'assistant',
+                content: chatGPTResponse,
+                title: 'chat gpt response',
+                user: {
+                    uid: 'assistant'
+                },
+            };
+            await firebase.db.collection('journal').doc(currentTime.toString() + '.1a').set(chatGPTMessageData);
+        }
         response.status(200).send("Success");
     } catch (e) {
         console.error('Unable to create journal database object', e);
-        response.status(500).send("Failure");
+        response.status(500).send("Unable to add journal to database");
     }
 });
 
