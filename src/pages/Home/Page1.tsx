@@ -30,6 +30,7 @@ interface JournalUser {
 }
 
 interface Journal {
+  id: string;
   createdAt: number;
   updatedAt: number;
   text: string;
