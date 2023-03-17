@@ -34,10 +34,10 @@ interface Journal {
   id: string;
   createdAt: number;
   updatedAt: number;
-  text: string;
+  role: string;
+  content: string;
   title: string;
   user?: JournalUser;
-  response?: boolean;
 }
 
 function Page1() {
@@ -77,23 +77,32 @@ function Page1() {
         journalData.id = doc?.id || 'no id';
         newJournals.push(journalData as Journal);
       });
-      newJournals = newJournals.sort((a, b) => a.createdAt - b.createdAt);
+      newJournals = newJournals.sort((a, b) => a.id.localeCompare(b.id));
       setJournals(newJournals);
     });
   }, [db]);
 
   function submitJournalEntry() {
     if (user && text) {
+      const millis = Date.now();
+      const currentTime = Math.floor(millis);
       const journalAPIURL = `${API_URL}/journal`;
       const title = 'title';
-      const data = {
-        user,
-        title,
-        text,
+      const postData: Journal = {
+        user: user as JournalUser,
+        title: title,
+        content: text,
+        role: 'user',
+        createdAt: currentTime,
+        updatedAt: currentTime,
+        id: currentTime.toString() + '.u',
       };
       setSending(true);
       axios
-        .post(journalAPIURL, data)
+        .post(journalAPIURL, {
+          ...postData,
+          messages: journals,
+        })
         .then((res) => {
           console.log('journal submit response', res);
           setText('');
@@ -149,9 +158,9 @@ function Page1() {
                     }}
                   >
                     <Typography style={{ color: 'black' }}>
-                      {journal.response ? 'Serenity:' : 'You:'}
+                      {journal.role === 'assistant' ? 'Serenity: ' : 'You: '}
                     </Typography>
-                    <Typography style={{ color: 'black' }}>{journal.text}</Typography>
+                    <Typography style={{ color: 'black' }}>{journal.content}</Typography>
                   </div>
                 );
               })}
