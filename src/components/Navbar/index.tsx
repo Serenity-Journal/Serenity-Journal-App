@@ -21,6 +21,8 @@ import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 
 import firebaseApp from '@/utils/firebase';
 
+import logo from '../../lotus.png';
+
 // const pages = ['Products', 'Pricing', 'Blog'];
 // const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 const pages: Array<string> = [];
@@ -71,6 +73,15 @@ function ResponsiveAppBar() {
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           {/*<Create sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />*/}
+          <Box
+            component="img"
+            sx={{
+              height: 50,
+            }}
+            alt="Your logo."
+            src={logo}
+            style={{ marginRight: '10px' }}
+          />
           <Typography
             variant="h6"
             noWrap
@@ -141,9 +152,7 @@ function ResponsiveAppBar() {
               color: 'inherit',
               textDecoration: 'none',
             }}
-          >
-            Serenity Journal
-          </Typography>
+          ></Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
               <Button
