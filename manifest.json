@@ -1,7 +1,7 @@
 {
-  "name": "React PWA",
+  "name": "Serenity Journal",
   "short_name": "Serenity Journal",
-  "description": "Starter kit for modern web applications",
+  "description": "Journal to help you get through life",
   "theme_color": "#ffffff",
   "icons": [
     {
