@@ -1,8 +1,12 @@
 .env
-.firebase/*
-.firebase
+#.firebase/*
+#.firebase
 .firebase/hosting.*.*
 .firebase/hosting.*
+.firebase/functions.*.*
+.firebase/functions.*
+.firebase/function.*.*
+.firebase/function.*
 
 # Logs
 logs
