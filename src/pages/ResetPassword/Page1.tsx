@@ -12,16 +12,40 @@ import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
+import { getAuth, sendPasswordResetEmail } from 'firebase/auth';
+
 import Meta from '@/components/Meta';
 import Navbar from '@/components/Navbar';
+import firebaseApp from '@/utils/firebase';
 
 function Page1() {
+  const auth = getAuth(firebaseApp);
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({
       email: data.get('email'),
     });
+
+    const email = data.get('email') as string;
+
+    if (!email) {
+      alert('Please provide an email');
+      return;
+    }
+
+    sendPasswordResetEmail(auth, email)
+      .then(() => {
+        alert('Reset Password Email Sent!');
+        location.href = '/';
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.error(errorCode, errorMessage);
+        alert('Invalid email provided');
+      });
   };
 
   return (

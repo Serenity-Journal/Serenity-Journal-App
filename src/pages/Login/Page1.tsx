@@ -12,10 +12,15 @@ import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+
 import Meta from '@/components/Meta';
 import Navbar from '@/components/Navbar';
+import firebaseApp from '@/utils/firebase';
 
 function Page1() {
+  const auth = getAuth(firebaseApp);
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -23,6 +28,28 @@ function Page1() {
       email: data.get('email'),
       password: data.get('password'),
     });
+
+    const email = data.get('email') as string;
+    const password = data.get('password') as string;
+
+    if (!email || !password) {
+      alert('Please fill in all fields');
+      return;
+    }
+
+    signInWithEmailAndPassword(auth, email, password)
+      .then(() => {
+        // Signed in
+        // const user = userCredential.user;
+        // ...
+        location.href = '/';
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        alert('Invalid email or password');
+        console.error(errorCode, errorMessage);
+      });
   };
 
   return (

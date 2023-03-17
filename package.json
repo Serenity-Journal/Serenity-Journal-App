@@ -24,6 +24,8 @@
     "@mui/material": "^5.10.6",
     "@mui/system": "^5.10.6",
     "@mui/utils": "^5.10.6",
+    "@types/firebase": "^3.2.1",
+    "firebase": "^9.18.0",
     "firebase-functions": "^4.2.1",
     "is-mobile": "^3.1.1",
     "node": "^19.6.1",

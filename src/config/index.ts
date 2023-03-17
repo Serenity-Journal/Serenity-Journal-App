@@ -2,11 +2,11 @@ import isMobile from '@/utils/is-mobile';
 
 import type { Notifications } from './types';
 
-const title = 'React PWA';
+const title = 'Serenity Journal';
 
-const email = 'auther-email@gmail.com';
+const email = 'rdeepak2002@gmail.com';
 
-const repository = 'https://github.com/suren-atoyan/react-pwa';
+const repository = 'https://github.com/Serenity-Journal/Serenity-Journal-App';
 
 const messages = {
   app: {
