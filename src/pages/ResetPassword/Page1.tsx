@@ -84,7 +84,7 @@ function Page1() {
             </Button>
             <Grid container>
               <Grid item>
-                <Link href="/login" variant="body2" style={{ color: 'white' }}>
+                <Link href="/login" color="inherit" variant="body2">
                   {'Back to sign in'}
                 </Link>
               </Grid>

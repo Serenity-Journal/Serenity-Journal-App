@@ -206,7 +206,7 @@ function Page1() {
                           background: 'rgba(255,255,255,0)',
                         }}
                       >
-                        <Typography style={{ flexGrow: isMobileStyle ? 0 : 1, color: 'white' }}>
+                        <Typography style={{ flexGrow: isMobileStyle ? 0 : 1 }}>
                           {journal.content}
                         </Typography>
                         {chatGPTResponseJournal && (
@@ -253,8 +253,8 @@ function Page1() {
                   minHeight: '5rem',
                   background: 'rgba(0, 0, 0, 0)',
                   resize: 'none',
-                  color: 'white',
-                  borderColor: 'white',
+                  color: 'black',
+                  borderColor: 'black',
                   borderRadius: '6px',
                   borderStyle: 'solid',
                 }}

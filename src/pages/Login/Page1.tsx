@@ -98,12 +98,12 @@ function Page1() {
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link href="/reset-password" variant="body2" style={{ color: 'white' }}>
+                <Link href="/reset-password" color="inherit" variant="body2" style={{}}>
                   Forgot password?
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="/register" variant="body2" style={{ color: 'white' }}>
+                <Link href="/register" color="inherit" variant="body2" style={{}}>
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>

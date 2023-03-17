@@ -1,7 +1,15 @@
 .MuiFormLabel-root {
-  color: white !important;
+  color: black !important;
 }
 
 .MuiAvatar-root {
   color: white !important;
+}
+
+.MuiMenu-paper {
+  background: #ba867c !important;
+}
+
+.css-1uwgr7b-MuiTypography-root {
+  color: white;
 }

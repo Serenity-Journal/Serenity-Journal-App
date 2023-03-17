@@ -49,15 +49,28 @@ const themes: Record<Themes, ThemeOptions> = {
     },
   }),
 
+  // dark: deepmerge(sharedTheme, {
+  //   palette: {
+  //     mode: 'dark',
+  //     background: {
+  //       default: '#111',
+  //       paper: '#171717',
+  //     },
+  //     primary: {
+  //       main: '#333',
+  //     },
+  //   },
+  // }),
+
   dark: deepmerge(sharedTheme, {
     palette: {
-      mode: 'dark',
+      mode: 'light',
       background: {
-        default: '#111',
+        default: '#f7e5d7',
         paper: '#171717',
       },
       primary: {
-        main: '#333',
+        main: '#ba867c',
       },
     },
   }),
