@@ -9,7 +9,7 @@
   },
   "license": "(GPL-3.0 AND MIT)",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --open",
     "build": "tsc && vite build",
     "deploy": "yarn run build && firebase deploy",
     "preview": "vite preview",
