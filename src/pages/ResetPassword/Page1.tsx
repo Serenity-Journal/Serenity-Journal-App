@@ -4,6 +4,8 @@ import QuestionMarkOutlinedIcon from '@mui/icons-material/Key';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+// import { FullSizeCenteredFlexBox } from '@/components/styled';
+import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid';
 import Link from '@mui/material/Link';
@@ -11,7 +13,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
 import Meta from '@/components/Meta';
-import { FullSizeCenteredFlexBox } from '@/components/styled';
+import Navbar from '@/components/Navbar';
 
 function Page1() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -24,8 +26,9 @@ function Page1() {
 
   return (
     <>
-      <Meta title="page 1" />
-      <FullSizeCenteredFlexBox>
+      <Meta title="reset password" />
+      <Navbar />
+      <Container>
         <CssBaseline />
         <Box
           sx={{
@@ -64,7 +67,7 @@ function Page1() {
             </Grid>
           </Box>
         </Box>
-      </FullSizeCenteredFlexBox>
+      </Container>
     </>
   );
 }
