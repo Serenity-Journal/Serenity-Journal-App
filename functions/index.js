@@ -5,8 +5,6 @@ const bodyParser = require('body-parser');
 const app = express();
 const firebase = require('./firebase');
 
-console.log(process.env.OPEN_AI_API_KEY);
-
 app.use(bodyParser.urlencoded({ extended: false }));
 const allowedOrigins = ['*',
     'http://localhost:3000',
