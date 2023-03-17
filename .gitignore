@@ -1,5 +1,8 @@
 .env
 .firebase/*
+.firebase
+.firebase/hosting.*.*
+.firebase/hosting.*
 
 # Logs
 logs
