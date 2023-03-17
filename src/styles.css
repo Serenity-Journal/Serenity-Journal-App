@@ -41,15 +41,16 @@ button {
 }
 
 .MuiAvatar-root {
-  color: white !important;
+  background: white !important;
+  color: black !important;
 }
 
 .MuiMenu-paper {
-  background: #ba867c !important;
+  background: #ffffff !important;
 }
 
 .css-1uwgr7b-MuiTypography-root {
-  color: white;
+  color: black !important;
 }
 
 /* width */

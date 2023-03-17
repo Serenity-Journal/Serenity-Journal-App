@@ -197,8 +197,52 @@ function Page1() {
                 paddingBlockEnd: isMobileStyle ? '0px' : '50px',
                 zIndex: 98,
                 boxShadow: "0px 0px 10px 1px #aaaaaa",
+                overflowY: "scroll",
               }}>
-                Left Page
+                {journals
+                    .filter((journal) => journal.role === 'user')
+                    .map((journal) => {
+                      const chatGPTResponseJournals = journals.filter(
+                          (cj) => cj.role === 'assistant' && cj.createdAt === journal.createdAt,
+                      );
+                      let chatGPTResponseJournal;
+                      if (chatGPTResponseJournals && chatGPTResponseJournals.length > 0) {
+                        chatGPTResponseJournal = chatGPTResponseJournals[0];
+                      }
+
+                      return (
+                          <div key={journal.id}>
+                            <Typography sx={{ fontStyle: 'italic' }} style={{fontWeight: '1000', textDecoration: 'underline'}}>
+                              {formatDate(new Date(journal.createdAt))}
+                            </Typography>
+                            <div
+                                id={journal.createdAt.toString()}
+                                key={journal.id}
+                                style={{
+                                  display: 'flex',
+                                  flexDirection: isMobileStyle ? 'column' : 'row',
+                                  background: 'rgba(255,255,255,0)',
+                                }}
+                            >
+                              <p style={{ flexGrow: isMobileStyle ? 0 : 1 }}>
+                                {journal.content}
+                              </p>
+                              {/*{chatGPTResponseJournal && (*/}
+                              {/*    <div*/}
+                              {/*        style={{*/}
+                              {/*          background: 'rgba(255,255,255,0.27)',*/}
+                              {/*          width: isMobileStyle ? '100%' : '400px',*/}
+                              {/*          padding: '5px',*/}
+                              {/*          borderRadius: '10px',*/}
+                              {/*        }}*/}
+                              {/*    >*/}
+                              {/*      {chatGPTResponseJournal.content}*/}
+                              {/*    </div>*/}
+                              {/*)}*/}
+                            </div>
+                          </div>
+                      );
+                    })}
               </div>
               <div style={{
                 flex: 0.00,
@@ -221,8 +265,50 @@ function Page1() {
                 paddingBlockEnd: '50px',
                 boxShadow: "0px 0px 10px 1px #aaaaaa",
                 zIndex: 99,
+                overflowY: "scroll",
               }}>
-                Right Page
+                {journals
+                    .filter((journal) => journal.role === 'user')
+                    .map((journal) => {
+                      const chatGPTResponseJournals = journals.filter(
+                          (cj) => cj.role === 'assistant' && cj.createdAt === journal.createdAt,
+                      );
+                      let chatGPTResponseJournal;
+                      if (chatGPTResponseJournals && chatGPTResponseJournals.length > 0) {
+                        chatGPTResponseJournal = chatGPTResponseJournals[0];
+                      }
+
+                      return (
+                          <div key={chatGPTResponseJournal?.id || journal?.id}>
+                            <Typography sx={{ fontStyle: 'italic' }} style={{fontWeight: '1000', textDecoration: 'underline'}}>
+                              {formatDate(new Date(journal.createdAt))}
+                            </Typography>
+                            <div
+                                id={journal.createdAt.toString()}
+                                key={journal.id}
+                                style={{
+                                  display: 'flex',
+                                  flexDirection: isMobileStyle ? 'column' : 'row',
+                                  background: 'rgba(255,255,255,0)',
+                                }}
+                            >
+                              {/*<Typography style={{ flexGrow: isMobileStyle ? 0 : 1 }}>*/}
+                              {/*  {journal.content}*/}
+                              {/*</Typography>*/}
+                              {chatGPTResponseJournal && (
+                                  <p
+                                      style={{
+                                        background: 'rgba(255,255,255,0.27)',
+                                        width: isMobileStyle ? '100%' : '400px',
+                                      }}
+                                  >
+                                    {chatGPTResponseJournal.content}
+                                  </p>
+                              )}
+                            </div>
+                          </div>
+                      );
+                    })}
               </div>
 
             </div>
