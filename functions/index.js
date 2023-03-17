@@ -9,6 +9,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 const allowedOrigins = ['*',
     'http://localhost:3000',
     'http://localhost:5173',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:5173',
     'https://serenity-journal.web.app'];
 app.use(cors({
     origin: function (origin, callback) {
@@ -40,6 +42,7 @@ app.post('/journal', async function (request, response) {
         text: request?.body?.text,
         createdAt: currentTime,
         updatedAt: currentTime,
+        response: false,
     };
 
     try {
