@@ -45,7 +45,8 @@ app.post('/journal', async function (request, response) {
     const openai = new OpenAIApi(configuration);
 
     const millis = Date.now();
-    const currentTime = Math.floor(millis);
+    console.log('request created at', request?.body?.createdAt);
+    const currentTime = request?.body?.createdAt || Math.floor(millis);
 
     const newMessageData = {
         user: request?.body?.user,

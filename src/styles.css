@@ -6,6 +6,11 @@ a {
   font-family: 'Playfair Display', serif !important;
 }
 
+textarea {
+  font-weight: 400;
+  font-family: 'Playfair Display', serif !important;
+}
+
 h1 {
   font-weight: 400;
   font-family: 'Playfair Display', serif !important;
