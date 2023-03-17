@@ -21,6 +21,7 @@ import {
 import { API_URL } from '@/api';
 import Meta from '@/components/Meta';
 import Navbar from '@/components/Navbar';
+import useWindowDimensions from '@/hooks/useWindowDimensions';
 import firebaseApp from '@/utils/firebase';
 
 interface JournalUser {
@@ -47,6 +48,14 @@ function Page1() {
   const [journals, setJournals] = useState<Array<Journal>>([]);
   const [text, setText] = useState<string>('');
   const [sending, setSending] = useState<boolean>(false);
+  const { width } = useWindowDimensions();
+  const [maxWidth, setMaxWidth] = useState('280px');
+
+  useEffect(() => {
+    if (width) {
+      setMaxWidth(`${Math.min((width || 280) - 16, 600)}px`);
+    }
+  }, [width]);
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
@@ -106,14 +115,28 @@ function Page1() {
         <>
           <Meta title="home" />
           <Navbar />
-          <Container style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Container
+            style={{
+              width: '100%',
+              padding: '0px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              height: '100%',
+            }}
+          >
             {/*Journals*/}
             <div
               style={{
                 display: 'flex',
                 flexDirection: 'column',
                 width: '100%',
-                maxWidth: '600px',
+                maxWidth: maxWidth,
+                flexGrow: 1,
+                overflowY: 'scroll',
+                rowGap: '10px',
+                marginTop: '10px',
+                marginBottom: '10px',
               }}
             >
               {journals.map((journal) => {
@@ -121,8 +144,8 @@ function Page1() {
                   <div
                     key={journal.id}
                     style={{
+                      display: 'flex',
                       background: 'white',
-                      marginTop: '10px',
                     }}
                   >
                     <Typography style={{ color: 'black' }}>
@@ -134,7 +157,15 @@ function Page1() {
               })}
             </div>
             {/*Journal Entry*/}
-            <>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                width: '100%',
+                maxWidth: maxWidth,
+                height: 'auto',
+              }}
+            >
               <TextareaAutosize
                 disabled={sending}
                 placeholder={'Release your emotions here'}
@@ -145,9 +176,9 @@ function Page1() {
                 style={{
                   fontFamily: 'monospace',
                   fontWeight: 700,
-                  marginTop: '10px',
+                  // marginTop: '10px',
                   width: '100%',
-                  maxWidth: '600px',
+                  maxWidth: maxWidth,
                   minHeight: '5rem',
                 }}
                 onKeyDown={(event) => {
@@ -165,14 +196,14 @@ function Page1() {
                 fullWidth
                 variant="contained"
                 style={{
-                  maxWidth: '600px',
-                  marginTop: '10px',
+                  maxWidth: maxWidth,
+                  // marginTop: '10px',
                 }}
                 sx={{ mt: 3, mb: 2 }}
               >
                 {sending ? 'Please wait...' : 'Send'}
               </Button>
-            </>
+            </div>
           </Container>
         </>
       ) : (
