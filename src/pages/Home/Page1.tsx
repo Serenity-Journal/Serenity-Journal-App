@@ -396,6 +396,7 @@ function Page1() {
                                 marginTop: '0',
                                 textDecoration: 'underline',
                                 textDecorationColor: journal.color,
+                                textDecorationThickness: '2px',
                               }}
                             >
                               {chatGPTResponseJournal.content}
