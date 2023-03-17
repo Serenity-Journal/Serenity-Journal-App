@@ -116,9 +116,7 @@ app.post('/journal', async function (request, response) {
                 role: 'assistant',
                 content: chatGPTResponse,
                 title: 'chat gpt response',
-                user: {
-                    uid: 'assistant'
-                },
+                user: request?.body?.user,
             };
             await firebase.db.collection('journal').doc(currentTime.toString() + '.1a').set(chatGPTMessageData);
         }

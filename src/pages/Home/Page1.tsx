@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { TextareaAutosize } from '@mui/material';
 import Button from '@mui/material/Button';
@@ -8,15 +8,7 @@ import Typography from '@mui/material/Typography';
 import { User } from '@firebase/auth';
 import axios from 'axios';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import {
-  collection, // getDocs,
-  // query,
-  // where,
-  getFirestore, // deleteDoc,
-  // doc, setDoc,
-  // GeoPoint, getDoc,
-  onSnapshot,
-} from 'firebase/firestore';
+import { collection, getFirestore, onSnapshot, query, where } from 'firebase/firestore';
 
 import { API_URL } from '@/api';
 import Meta from '@/components/Meta';
@@ -49,11 +41,12 @@ function Page1() {
   const [text, setText] = useState<string>('');
   const [sending, setSending] = useState<boolean>(false);
   const { width } = useWindowDimensions();
-  const [maxWidth, setMaxWidth] = useState('280px');
+  const messagesEndRef = useRef<null | HTMLDivElement>(null);
+  const [isMobileStyle, setIsMobileStyle] = useState<boolean>(true);
 
   useEffect(() => {
     if (width) {
-      setMaxWidth(`${Math.min((width || 280) - 16, 600)}px`);
+      setIsMobileStyle((width && width < 600) as boolean);
     }
   }, [width]);
 
@@ -69,18 +62,53 @@ function Page1() {
   }, [auth]);
 
   useEffect(() => {
-    const colRef = collection(db, 'journal');
-    onSnapshot(colRef, (snapshot) => {
-      let newJournals: Array<Journal> = [];
-      snapshot.docs.forEach((doc) => {
-        const journalData = doc.data();
-        journalData.id = doc?.id || 'no id';
-        newJournals.push(journalData as Journal);
+    if (user) {
+      const colRef = query(collection(db, 'journal'), where('user.uid', '==', user?.uid));
+      onSnapshot(colRef, (snapshot) => {
+        let newJournals: Array<Journal> = [];
+        snapshot.docs.forEach((doc) => {
+          const journalData = doc.data();
+          journalData.id = doc?.id || 'no id';
+          newJournals.push(journalData as Journal);
+        });
+        newJournals = newJournals.sort((a, b) => a.id.localeCompare(b.id));
+        setJournals(newJournals);
       });
-      newJournals = newJournals.sort((a, b) => a.id.localeCompare(b.id));
-      setJournals(newJournals);
-    });
-  }, [db]);
+    }
+  }, [db, user]);
+
+  const getMaxWidth = (def: number | undefined) => {
+    return `${Math.min((width || 280) - 16, def || 800)}px`;
+  };
+
+  const scrollToBottom = (arg: ScrollIntoViewOptions) => {
+    // const element = document.getElementById(id);
+    // if (element) {
+    //   element.scrollTop = element.scrollHeight;
+    // }
+    messagesEndRef.current?.scrollIntoView(arg);
+  };
+
+  useEffect(() => {
+    scrollToBottom({});
+  }, [journals]);
+
+  function formatDate(date: Date): string {
+    const day = date.getDate();
+    const month = date.getMonth();
+    const year = date.getFullYear();
+    let hour = date.getHours();
+    const minute = date.getMinutes();
+    let t = 'AM';
+    if (hour > 12) {
+      hour -= 12;
+      t = 'PM';
+    }
+    if (hour == 0) {
+      hour = 12;
+    }
+    return `${month}/${day}/${year} ${hour}:${minute} ${t}`;
+  }
 
   function submitJournalEntry() {
     if (user && text) {
@@ -140,13 +168,12 @@ function Page1() {
               height: '100%',
             }}
           >
-            {/*Journals*/}
             <div
               style={{
                 display: 'flex',
                 flexDirection: 'column',
                 width: '100%',
-                maxWidth: maxWidth,
+                maxWidth: getMaxWidth(1000.0),
                 flexGrow: 1,
                 overflowY: 'scroll',
                 rowGap: '10px',
@@ -154,22 +181,51 @@ function Page1() {
                 marginBottom: '10px',
               }}
             >
-              {journals.map((journal) => {
-                return (
-                  <div
-                    key={journal.id}
-                    style={{
-                      display: 'flex',
-                      background: 'white',
-                    }}
-                  >
-                    <Typography style={{ color: 'black' }}>
-                      {journal.role === 'assistant' ? 'Serenity: ' : 'You: '}
-                    </Typography>
-                    <Typography style={{ color: 'black' }}>{journal.content}</Typography>
-                  </div>
-                );
-              })}
+              {journals
+                .filter((journal) => journal.role === 'user')
+                .map((journal) => {
+                  const chatGPTResponseJournals = journals.filter(
+                    (cj) => cj.role === 'assistant' && cj.createdAt === journal.createdAt,
+                  );
+                  let chatGPTResponseJournal;
+                  if (chatGPTResponseJournals && chatGPTResponseJournals.length > 0) {
+                    chatGPTResponseJournal = chatGPTResponseJournals[0];
+                  }
+
+                  return (
+                    <div key={journal.id}>
+                      <Typography sx={{ fontStyle: 'italic' }}>
+                        {formatDate(new Date(journal.createdAt))}
+                      </Typography>
+                      <div
+                        id={journal.createdAt.toString()}
+                        key={journal.id}
+                        style={{
+                          display: 'flex',
+                          flexDirection: isMobileStyle ? 'column' : 'row',
+                          background: 'rgba(255,255,255,0)',
+                        }}
+                      >
+                        <Typography style={{ flexGrow: isMobileStyle ? 0 : 1, color: 'white' }}>
+                          {journal.content}
+                        </Typography>
+                        {chatGPTResponseJournal && (
+                          <div
+                            style={{
+                              background: 'rgba(255,255,255,0.27)',
+                              width: isMobileStyle ? '100%' : '400px',
+                              padding: '5px',
+                              borderRadius: '10px',
+                            }}
+                          >
+                            {chatGPTResponseJournal.content}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              <div ref={messagesEndRef} />
             </div>
             {/*Journal Entry*/}
             <div
@@ -177,7 +233,7 @@ function Page1() {
                 display: 'flex',
                 flexDirection: 'column',
                 width: '100%',
-                maxWidth: maxWidth,
+                maxWidth: getMaxWidth(1000),
                 height: 'auto',
               }}
             >
@@ -193,7 +249,7 @@ function Page1() {
                   fontWeight: 700,
                   // marginTop: '10px',
                   width: '100%',
-                  maxWidth: maxWidth,
+                  maxWidth: getMaxWidth(1000),
                   minHeight: '5rem',
                 }}
                 onKeyDown={(event) => {
@@ -211,7 +267,7 @@ function Page1() {
                 fullWidth
                 variant="contained"
                 style={{
-                  maxWidth: maxWidth,
+                  maxWidth: getMaxWidth(1000),
                   // marginTop: '10px',
                 }}
                 sx={{ mt: 3, mb: 2 }}

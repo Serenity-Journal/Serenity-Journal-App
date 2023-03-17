@@ -11,7 +11,7 @@
   "scripts": {
     "dev": "vite --open",
     "build": "tsc && vite build",
-    "deploy": "yarn run build && firebase deploy",
+    "deploy": "yarn build && firebase deploy",
     "preview": "vite preview",
     "https-preview": "serve dist",
     "prepare": "husky install"
