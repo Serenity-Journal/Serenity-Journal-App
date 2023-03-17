@@ -164,7 +164,7 @@ function Page1() {
           setSending(false);
           console.error(err);
           if (err?.response?.data === 'Chat GPT failure') {
-            alert('Error communicating with ChatGPT');
+            alert('ChatGPT $120 usage limit reached');
           } else if (err?.response?.data === 'Unable to add journal to database') {
             alert('Database error');
           } else {
