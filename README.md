@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- [NodeJS](https://nodejs.org/en/download)
+- [NodeJS 16](https://nodejs.org/en/blog/release/v16.16.0)
 - [Firebase CLI](https://firebase.google.com/docs/cli)
 
 ## Get Started (Progressive Web Application)
