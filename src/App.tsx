@@ -13,6 +13,7 @@ import SW from '@/sections/SW';
 
 // import Sidebar from '@/sections/Sidebar';
 import { API_URL } from './api';
+import './styles.css';
 
 console.log('API URL: ', API_URL);
 

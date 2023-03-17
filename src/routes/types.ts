@@ -4,6 +4,7 @@ import { PathRouteProps } from 'react-router-dom';
 import type { SvgIconProps } from '@mui/material/SvgIcon';
 
 enum Pages {
+  ResetPassword,
   Login,
   LoginAlt,
   Home,

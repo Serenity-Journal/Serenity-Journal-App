@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Person2OutlinedIcon from '@mui/icons-material/Person2Outlined';
+import QuestionMarkOutlinedIcon from '@mui/icons-material/Key';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -19,8 +19,6 @@ function Page1() {
     const data = new FormData(event.currentTarget);
     console.log({
       email: data.get('email'),
-      password: data.get('password'),
-      confirmPassword: data.get('confirm-password'),
     });
   };
 
@@ -38,10 +36,10 @@ function Page1() {
           }}
         >
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <Person2OutlinedIcon />
+            <QuestionMarkOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign up
+            Reset password
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
@@ -54,33 +52,13 @@ function Page1() {
               autoComplete="email"
               autoFocus
             />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="confirm-password"
-              label="Confirm Password"
-              type="password"
-              id="confirm-password"
-              autoComplete="confirm-current-password"
-            />
             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-              Sign Up
+              Reset
             </Button>
             <Grid container>
               <Grid item>
                 <Link href="/login" variant="body2" style={{ color: 'white' }}>
-                  {'Have an account? Sign In'}
+                  {'Back to sign in'}
                 </Link>
               </Grid>
             </Grid>
