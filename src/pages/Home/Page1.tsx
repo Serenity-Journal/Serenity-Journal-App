@@ -251,6 +251,12 @@ function Page1() {
                   width: '100%',
                   maxWidth: getMaxWidth(1000),
                   minHeight: '5rem',
+                  background: 'rgba(0, 0, 0, 0)',
+                  resize: 'none',
+                  color: 'white',
+                  borderColor: 'white',
+                  borderRadius: '6px',
+                  borderStyle: 'solid',
                 }}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter') {
