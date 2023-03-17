@@ -1,3 +1,41 @@
+/*@import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');*/
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap');
+
+a {
+  font-weight: 700;
+  font-family: 'Playfair Display', serif !important;
+}
+
+h1 {
+  font-weight: 400;
+  font-family: 'Playfair Display', serif !important;
+}
+
+p {
+  font-weight: 400;
+  font-family: 'Playfair Display', serif !important;
+}
+
+div {
+  font-weight: 600;
+  font-family: 'Playfair Display', serif !important;
+}
+
+input {
+  font-weight: 600;
+  font-family: 'Playfair Display', serif !important;
+}
+
+label {
+  font-weight: 600;
+  font-family: 'Playfair Display', serif !important;
+}
+
+button {
+  font-weight: 400;
+  /*font-family: 'Playfair Display', serif !important;*/
+}
+
 .MuiFormLabel-root {
   color: black !important;
 }

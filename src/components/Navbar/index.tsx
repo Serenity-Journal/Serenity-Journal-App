@@ -69,7 +69,7 @@ function ResponsiveAppBar() {
   }, [auth]);
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" style={{backgroundColor: "rgba(255,255,255,0)", boxShadow: "none"}}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           {/*<Create sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />*/}
@@ -96,8 +96,9 @@ function ResponsiveAppBar() {
               color: 'inherit',
               textDecoration: 'none',
             }}
+            style={{color: '#814f45'}}
           >
-            SERENITY JOURNAL
+            Serenity Journal
           </Typography>
 
           {/*<Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>*/}

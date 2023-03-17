@@ -178,8 +178,10 @@ function Page1() {
                   overflowY: 'scroll',
                   // rowGap: '10px',
                   // columnGap: '2px',
-                  marginTop: '10px',
-                  marginBottom: '10px',
+                  paddingTop: '10px',
+                  paddingBottom: '10px',
+                  paddingLeft: '10px',
+                  paddingRight: '10px',
                 }}
             >
               <div style={{
@@ -193,13 +195,17 @@ function Page1() {
                 paddingRight: isMobileStyle ? '5px' : '50px',
                 paddingBlockStart: isMobileStyle ? '50px' : '50px',
                 paddingBlockEnd: isMobileStyle ? '0px' : '50px',
+                zIndex: 98,
+                boxShadow: "0px 0px 10px 1px #aaaaaa",
               }}>
                 Left Page
               </div>
               <div style={{
-                flex: 0.006,
-                // background: '#dadada'
-                backgroundImage: "linear-gradient(to right, white, rgba(200, 200, 200, 1.0), white)"
+                flex: 0.00,
+                background: 'rgba(253,251,252,0.5)',
+                // backgroundImage: "linear-gradient(white, rgba(200, 200, 200, 1.0), rgba(200, 200, 200, 1.0), rgba(200, 200, 200, 1.0), rgba(200, 200, 200, 1.0), rgba(200, 200, 200, 1.0), rgba(200, 200, 200, 1.0), rgba(200, 200, 200, 1.0), rgba(200, 200, 200, 1.0), rgba(200, 200, 200, 1.0), rgba(200, 200, 200, 1.0), rgba(200, 200, 200, 1.0), white)",
+                boxShadow: "-5px 0px 10px 1px #aaaaaa",
+                zIndex: 100,
               }}>
               </div>
               <div style={{
@@ -213,6 +219,8 @@ function Page1() {
                 paddingRight: isMobileStyle ? '5px' : '50px',
                 paddingBlockStart: isMobileStyle ? '0px' : '50px',
                 paddingBlockEnd: '50px',
+                boxShadow: "0px 0px 10px 1px #aaaaaa",
+                zIndex: 99,
               }}>
                 Right Page
               </div>
