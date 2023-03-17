@@ -13,3 +13,23 @@
 .css-1uwgr7b-MuiTypography-root {
   color: white;
 }
+
+/* width */
+::-webkit-scrollbar {
+  /*width: 10px;*/
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: rgba(241, 241, 241, 0);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(85, 85, 85, 0);
+}
