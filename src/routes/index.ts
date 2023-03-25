@@ -33,6 +33,12 @@ const routes: Routes = {
     title: 'Home',
     icon: HomeIcon,
   },
+  [Pages.MoodTracker]: {
+    component: asyncComponentLoader(() => import('@/pages/MoodTracker')),
+    path: '/mood-tracker',
+    title: 'Mood Tracker',
+    icon: HomeIcon,
+  },
   [Pages.NotFound]: {
     component: asyncComponentLoader(() => import('@/pages/NotFound')),
     path: '*',

@@ -9,6 +9,7 @@ enum Pages {
   LoginAlt,
   Home,
   NotFound,
+  MoodTracker ,
 }
 
 type PathRouteCustomProps = {
