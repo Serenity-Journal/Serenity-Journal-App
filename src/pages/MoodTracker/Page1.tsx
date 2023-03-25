@@ -1,29 +1,21 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState, memo } from 'react';
 
 import Container from '@mui/material/Container';
 
-import {getAuth, onAuthStateChanged} from 'firebase/auth';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 import Meta from '@/components/Meta';
 import Navbar from '@/components/Navbar';
 import firebaseApp from '@/utils/firebase';
-import {getFirestore} from "firebase/firestore";
-import {User} from "@firebase/auth";
+import { getFirestore } from 'firebase/firestore';
+import { User } from '@firebase/auth';
 
-import {Button, Paper, Typography} from '@mui/material';
-import {styled} from '@mui/material/styles';
-import Rating, {IconContainerProps} from '@mui/material/Rating';
+import { Button, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import Rating, { IconContainerProps } from '@mui/material/Rating';
 
 // Graph
-import {
-    Chart,
-    ArgumentAxis,
-    ValueAxis,
-    LineSeries,
-    Title,
-    Legend,
-} from '@devexpress/dx-react-chart-material-ui';
-import {Animation} from '@devexpress/dx-react-chart';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 // Icons
 import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
@@ -32,196 +24,170 @@ import SentimentSatisfiedIcon from '@mui/icons-material/SentimentSatisfied';
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAltOutlined';
 import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
 
-function Page1() {
+// eslint-disable-next-line react/display-name
+const Page1 = memo(() => {
 
-    const db = getFirestore(firebaseApp);
-    const auth = getAuth(firebaseApp);
-    const [user, setUser] = useState<User | undefined>(undefined);
-    const [rating, setRating] = useState<number | null>(null);
+  const db = getFirestore(firebaseApp);
+  const auth = getAuth(firebaseApp);
+  const [user, setUser] = useState<User | undefined>(undefined);
+  const [rating, setRating] = useState<number | null>(null);
 
-    useEffect(() => {
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                setUser(user);
-            } else {
-                console.log('Redirecting to login...');
-                location.href = '/login';
-            }
-        });
-    }, [auth]);
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+      } else {
+        console.log('Redirecting to login...');
+        location.href = '/login';
+      }
+    });
+  }, [auth]);
 
-    const PREFIX = "Mood";
+  // Graph Stuff
+  const data = [
+    {
+      name: 'Day 1',
+      mood: 3,
+      pv: 2400,
+      amt: 2400,
+    },
+    {
+      name: 'Day B',
+      mood: 5,
+      pv: 1398,
+      amt: 2210,
+    },
+    {
+      name: 'Day C',
+      mood: 5,
+      pv: 9800,
+      amt: 2290,
+    },
+    {
+      name: 'Day D',
+      mood: 4,
+      pv: 3908,
+      amt: 2000,
+    },
+    {
+      name: 'Day E',
+      mood: 3,
+      pv: 4800,
+      amt: 2181,
+    },
+    {
+      name: 'Day F',
+      mood: 4,
+      pv: 3800,
+      amt: 2500,
+    },
+    {
+      name: 'Day G',
+      mood: 5,
+      pv: 4300,
+      amt: 2100,
+    },
+  ];
 
-    const classes = {
-        chart: `${PREFIX}-chart`
+  // Rating Stuff
+  const StyledRating = styled(Rating)(({ theme }) => ({
+    '& .MuiRating-iconEmpty .MuiSvgIcon-root': {
+      color: theme.palette.action.disabled,
+    },
+  }));
+
+  const customIcons: {
+    [index: string]: {
+      icon: React.ReactElement;
+      label: string;
     };
+  } = {
+    1: {
+      icon: <SentimentVeryDissatisfiedIcon color='error' sx={{ width: 60, height: 60 }} />,
+      label: 'Very Dissatisfied',
+    },
+    2: {
+      icon: <SentimentDissatisfiedIcon color='error' sx={{ width: 60, height: 60 }} />,
+      label: 'Dissatisfied',
+    },
+    3: {
+      icon: <SentimentSatisfiedIcon color='warning' sx={{ width: 60, height: 60 }} />,
+      label: 'Neutral',
+    },
+    4: {
+      icon: <SentimentSatisfiedAltIcon color='success' sx={{ width: 60, height: 60 }} />,
+      label: 'Satisfied',
+    },
+    5: {
+      icon: <SentimentVerySatisfiedIcon color='success' sx={{ width: 60, height: 60 }} />,
+      label: 'Very Satisfied',
+    },
+  };
 
-    const format = () => (tick) => tick;
+  function IconContainer(props: IconContainerProps) {
+    const { value, ...other } = props;
+    return <span {...other}>{customIcons[value].icon}</span>;
+  }
 
-    const Root = (props) => (
-        <Legend.Root
-            {...props}
-            sx={{ display: "flex", margin: "auto", flexDirection: "row" }}
-        />
-    );
-    const Label = (props) => (
-        <Legend.Label sx={{ pt: 1, whiteSpace: "nowrap" }} {...props} />
-    );
-    const Item = (props) => (
-        <Legend.Item sx={{ flexDirection: "column" }} {...props} />
-    );
-
-    const ValueLabel = (props) => {
-        const { text } = props;
-        return <ValueAxis.Label {...props} text={`${text}%`} />;
-    };
-
-    const TitleText = (props) => (
-        <Title.Text {...props} sx={{ whiteSpace: "pre" }} />
-    );
-
-    const StyledChart = styled(Chart)(() => ({
-        [`&.${classes.chart}`]: {
-            paddingRight: "20px"
-        }
-    }));
-
-    const data = [
-        {
-            year: 1993, tvNews: 19, church: 29, military: 32,
-        }, {
-            year: 1995, tvNews: 13, church: 32, military: 33,
-        }, {
-            year: 1997, tvNews: 14, church: 35, military: 30,
-        }, {
-            year: 1999, tvNews: 13, church: 32, military: 34,
-        }, {
-            year: 2001, tvNews: 15, church: 28, military: 32,
-        }, {
-            year: 2003, tvNews: 16, church: 27, military: 48,
-        }, {
-            year: 2006, tvNews: 12, church: 28, military: 41,
-        }, {
-            year: 2008, tvNews: 11, church: 26, military: 45,
-        }, {
-            year: 2010, tvNews: 10, church: 25, military: 44,
-        }, {
-            year: 2012, tvNews: 11, church: 25, military: 43,
-        }, {
-            year: 2014, tvNews: 10, church: 25, military: 39,
-        }, {
-            year: 2016, tvNews: 8, church: 20, military: 41,
-        }, {
-            year: 2018, tvNews: 10, church: 20, military: 43,
-        },
-    ];
-
-
-    const StyledRating = styled(Rating)(({theme}) => ({
-        '& .MuiRating-iconEmpty .MuiSvgIcon-root': {
-            color: theme.palette.action.disabled,
-        },
-    }));
-
-    const customIcons: {
-        [index: string]: {
-            icon: React.ReactElement;
-            label: string;
-        };
-    } = {
-        1: {
-            icon: <SentimentVeryDissatisfiedIcon color="error" sx={{width: 60, height: 60}}/>,
-            label: 'Very Dissatisfied',
-        },
-        2: {
-            icon: <SentimentDissatisfiedIcon color="error" sx={{width: 60, height: 60}}/>,
-            label: 'Dissatisfied',
-        },
-        3: {
-            icon: <SentimentSatisfiedIcon color="warning" sx={{width: 60, height: 60}}/>,
-            label: 'Neutral',
-        },
-        4: {
-            icon: <SentimentSatisfiedAltIcon color="success" sx={{width: 60, height: 60}}/>,
-            label: 'Satisfied',
-        },
-        5: {
-            icon: <SentimentVerySatisfiedIcon color="success" sx={{width: 60, height: 60}}/>,
-            label: 'Very Satisfied',
-        },
-    };
-
-    function IconContainer(props: IconContainerProps) {
-        const {value, ...other} = props;
-        return <span {...other}>{customIcons[value].icon}</span>;
-    }
-
-    const [chartData, setChartData] = useState(data);
-
-    return (
+  return (
+    <>
+      {user ? (
         <>
-            {user ? (
-                <>
-                    <Meta title="home"/>
-                    <Navbar/>
-                    <Container
-                        style={{
-                            width: '100%',
-                            padding: '0px',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            height: '100%',
-                        }}
-                    >
-                        <Typography variant='h6' component="legend">{`Today's Mood`}</Typography>
-                        <StyledRating
-                            name="highlight-selected-only"
-                            value={rating}
-                            onChange={(event, newValue) => {
-                                setRating(newValue);
-                            }}
-                            IconContainerComponent={IconContainer}
-                            getLabelText={(value: number) => customIcons[value].label}
-                            highlightSelectedOnly
-                            size="large"
-                        />
-                        <Button variant="contained" type='submit' sx={{mt: 6}}>Update Mood For Today</Button>
+          <Meta title='home' />
+          <Navbar />
+          <Container
+            style={{
+              width: '100%',
+              padding: '0px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              height: '100%',
+            }}
+          >
+            <Typography variant='h6' component='legend'>{`Today's Mood`}</Typography>
+            <StyledRating
+              name='highlight-selected-only'
+              value={rating}
+              onChange={(event: any, newValue: React.SetStateAction<number | null>) => {
+                setRating(newValue);
+              }}
+              IconContainerComponent={IconContainer}
+              getLabelText={(value: number) => customIcons[value].label}
+              highlightSelectedOnly
+              size='large'
+            />
+            <Button variant='contained' type='submit' sx={{ mt: 6 }}>Update Mood For Today</Button>
 
-                        { /* Add Line Chart */}
-                        <Paper>
-                            {/*<StyledChart data={chartData} className={classes.chart}>*/}
-                            {/*    <ArgumentAxis tickFormat={format} />*/}
-                            {/*    <ValueAxis max={50} labelComponent={ValueLabel} />*/}
-
-                            {/*    <LineSeries name="TV news" valueField="tvNews" argumentField="year" />*/}
-                            {/*    <LineSeries name="Church" valueField="church" argumentField="year" />*/}
-                            {/*    <LineSeries*/}
-                            {/*        name="Military"*/}
-                            {/*        valueField="military"*/}
-                            {/*        argumentField="year"*/}
-                            {/*    />*/}
-                            {/*    <Legend*/}
-                            {/*        position="bottom"*/}
-                            {/*        rootComponent={Root}*/}
-                            {/*        itemComponent={Item}*/}
-                            {/*        labelComponent={Label}*/}
-                            {/*    />*/}
-                            {/*    <Title*/}
-                            {/*        text={`Confidence in Institutions in American society ${"\n"}(Great deal)`}*/}
-                            {/*        textComponent={TitleText}*/}
-                            {/*    />*/}
-                            {/*    <Animation />*/}
-                            {/*</StyledChart>*/}
-                        </Paper>
-
-                    </Container>
-                </>
-            ) : (
-                <></>
-            )}
+            { /* Add Line Chart */}
+            <br />
+            <ResponsiveContainer width='100%' height='100%'>
+              <LineChart
+                width={500}
+                height={300}
+                data={data}
+                margin={{
+                  top: 5,
+                  right: 30,
+                  left: 20,
+                  bottom: 5,
+                }}
+              >
+                <CartesianGrid strokeDasharray='3 3' />
+                <XAxis dataKey='name' />
+                <YAxis type='number' domain={[0, 5]} tickCount={6} />
+                <Tooltip />
+                <Legend />
+                <Line type='monotone' dataKey='mood' stroke='#82ca9d' strokeWidth={3} />
+              </LineChart>
+            </ResponsiveContainer>
+          </Container>
         </>
-    );
-}
+      ) : (
+        <></>
+      )}
+    </>
+  );
+});
 
 export default Page1;
