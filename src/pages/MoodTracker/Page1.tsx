@@ -1,4 +1,4 @@
-import React, { useEffect, useState, memo } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 
 import Container from '@mui/material/Container';
 
@@ -7,7 +7,7 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import Meta from '@/components/Meta';
 import Navbar from '@/components/Navbar';
 import firebaseApp from '@/utils/firebase';
-import { getFirestore } from 'firebase/firestore';
+import { collection, doc, getFirestore, onSnapshot, query, setDoc, where } from 'firebase/firestore';
 import { User } from '@firebase/auth';
 
 import { Button, Typography } from '@mui/material';
@@ -15,7 +15,7 @@ import { styled } from '@mui/material/styles';
 import Rating, { IconContainerProps } from '@mui/material/Rating';
 
 // Graph
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 // Icons
 import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
@@ -24,6 +24,20 @@ import SentimentSatisfiedIcon from '@mui/icons-material/SentimentSatisfied';
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAltOutlined';
 import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
 
+interface Mood {
+  createdAt: string;
+  rating: number;
+  uid: string;
+}
+
+type MyYAxisTickProps = {
+  x: number;
+  y: number;
+  payload: {
+    value: number;
+  };
+};
+
 // eslint-disable-next-line react/display-name
 const Page1 = memo(() => {
 
@@ -31,6 +45,7 @@ const Page1 = memo(() => {
   const auth = getAuth(firebaseApp);
   const [user, setUser] = useState<User | undefined>(undefined);
   const [rating, setRating] = useState<number | null>(null);
+  const [moods, setMoods] = useState<Array<Mood>>([]);
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
@@ -43,51 +58,58 @@ const Page1 = memo(() => {
     });
   }, [auth]);
 
+  useEffect(() => {
+    if (user) {
+      const colRef = query(collection(db, 'mood'), where('uid', '==', user?.uid));
+      onSnapshot(colRef, (snapshot) => {
+        let newMoods: Array<Mood> = [];
+        snapshot.docs.forEach((doc) => {
+          const moodData = doc.data();
+
+          if (moodData.createdAt === getTodayFormatted()) {
+            setRating(moodData.rating);
+          }
+
+          newMoods.push(moodData as Mood);
+        });
+        newMoods = newMoods.sort();
+        setMoods(newMoods);
+      });
+    }
+  }, [db, user]);
+
+  const submitMoodRating = async () => {
+    if (user && rating) {
+      const timeFormatted = getTodayFormatted();
+
+      console.log('Submitting mood at ' + timeFormatted);
+      const newMood = {
+        createdAt: timeFormatted,
+        rating: rating,
+        uid: user.uid,
+      };
+
+      await setDoc(doc(db, 'mood', user.uid + timeFormatted.replace(/\//g, '')), newMood);
+    } else {
+      alert('Journal entry cannot be blank');
+    }
+  };
+
   // Graph Stuff
-  const data = [
-    {
-      name: 'Day 1',
-      mood: 3,
-      pv: 2400,
-      amt: 2400,
-    },
-    {
-      name: 'Day B',
-      mood: 5,
-      pv: 1398,
-      amt: 2210,
-    },
-    {
-      name: 'Day C',
-      mood: 5,
-      pv: 9800,
-      amt: 2290,
-    },
-    {
-      name: 'Day D',
-      mood: 4,
-      pv: 3908,
-      amt: 2000,
-    },
-    {
-      name: 'Day E',
-      mood: 3,
-      pv: 4800,
-      amt: 2181,
-    },
-    {
-      name: 'Day F',
-      mood: 4,
-      pv: 3800,
-      amt: 2500,
-    },
-    {
-      name: 'Day G',
-      mood: 5,
-      pv: 4300,
-      amt: 2100,
-    },
-  ];
+  const getTodayFormatted = (): string => {
+    const currentTime = Math.floor(new Date(Date.now()).getTime());
+    return formatDate(currentTime);
+  };
+
+  const formatDate = (createdAt: number): string => {
+    const date = new Date(createdAt);
+
+    const day = date.getDate();
+    const month = date.getMonth();
+    const year = date.getFullYear();
+
+    return `${month}/${day}/${year}`;
+  };
 
   // Rating Stuff
   const StyledRating = styled(Rating)(({ theme }) => ({
@@ -129,6 +151,18 @@ const Page1 = memo(() => {
     return <span {...other}>{customIcons[value].icon}</span>;
   }
 
+  const MyYAxisTick = ({ x, y, payload }: MyYAxisTickProps): any => {
+    if (payload.value === 0) {
+      return null;
+    }
+    return (
+      <text x={x} y={y} dy={16} textAnchor='middle' fill='#666'>
+        {payload.value}
+      </text>
+    );
+  };
+
+
   return (
     <>
       {user ? (
@@ -157,7 +191,8 @@ const Page1 = memo(() => {
               highlightSelectedOnly
               size='large'
             />
-            <Button variant='contained' type='submit' sx={{ mt: 6 }}>Update Mood For Today</Button>
+            <Button variant='contained' type='submit' sx={{ mt: 6 }} onClick={submitMoodRating}>Update Mood For
+              Today</Button>
 
             { /* Add Line Chart */}
             <br />
@@ -165,7 +200,7 @@ const Page1 = memo(() => {
               <LineChart
                 width={500}
                 height={300}
-                data={data}
+                data={moods}
                 margin={{
                   top: 5,
                   right: 30,
@@ -174,11 +209,11 @@ const Page1 = memo(() => {
                 }}
               >
                 <CartesianGrid strokeDasharray='3 3' />
-                <XAxis dataKey='name' />
-                <YAxis type='number' domain={[0, 5]} tickCount={6} />
+                <XAxis dataKey='createdAt' />
+                <YAxis type='number' domain={[0, 5]} tick={MyYAxisTick} tickCount={6} />
                 <Tooltip />
                 <Legend />
-                <Line type='monotone' dataKey='mood' stroke='#82ca9d' strokeWidth={3} />
+                <Line type='monotone' dataKey='rating' stroke='#82ca9d' strokeWidth={3} />
               </LineChart>
             </ResponsiveContainer>
           </Container>
