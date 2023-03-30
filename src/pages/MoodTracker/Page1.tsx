@@ -151,7 +151,7 @@ const Page1 = memo(() => {
     return <span {...other}>{customIcons[value].icon}</span>;
   }
 
-  const MyYAxisTick = ({ x, y, payload }: MyYAxisTickProps): JSX => {
+  const MyYAxisTick = ({ x, y, payload }: MyYAxisTickProps): any => {
     if (payload.value === 0) {
       return null;
     }
