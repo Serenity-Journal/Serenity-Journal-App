@@ -21,6 +21,7 @@ import {
   getFirestore,
   onSnapshot,
   query,
+  setDoc,
   where,
 } from 'firebase/firestore';
 
@@ -72,7 +73,7 @@ function hexToRgb(hex: string): RGB {
       };
 }
 
-const settings = ['Delete'];
+const settings = ['Delete', 'Cache'];
 
 function Page1() {
   // const db = getFirestore(firebaseApp);
@@ -108,11 +109,39 @@ function Page1() {
       x()
         .then(() => {
           setSending(false);
+          handleCloseUserMenu();
         })
         .catch((e) => {
           setSending(false);
           console.error(e);
           alert('Unable to delete journal, please try again later');
+        });
+    } catch (e) {
+      setSending(false);
+      console.error(e);
+      alert('Unable to delete journal, please try again later');
+    }
+  };
+
+  const cacheJournalResponse = (journal: Journal, chatGPTResponseJournal: Journal) => {
+    setSending(true);
+    try {
+      const x = async () => {
+        await setDoc(doc(db, 'journal-cache', journal.id), {
+          userID: user?.uid || 'no_user_id',
+          key: journal.content,
+          value: chatGPTResponseJournal.content,
+        });
+      };
+      x()
+        .then(() => {
+          setSending(false);
+          handleCloseUserMenu();
+        })
+        .catch((e) => {
+          setSending(false);
+          console.error(e);
+          alert('Unable to cache journal, please try again later');
         });
     } catch (e) {
       setSending(false);
@@ -358,6 +387,10 @@ function Page1() {
                                     if (setting === 'Delete') {
                                       // delete journal
                                       deleteJournal(journal, chatGPTResponseJournal);
+                                      handleCloseUserMenu();
+                                    } else if (setting === 'Cache') {
+                                      // cache journal response
+                                      cacheJournalResponse(journal, chatGPTResponseJournal);
                                       handleCloseUserMenu();
                                     } else {
                                       alert('Unknown action to take for journal');
