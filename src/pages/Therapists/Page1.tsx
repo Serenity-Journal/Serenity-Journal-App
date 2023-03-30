@@ -80,7 +80,7 @@ function Page1() {
             return (
               <Card
                 key={therapist.id}
-                sx={{ minWidth: 275, width: 600, mt: 3, background: 'white' }}
+                sx={{ minWidth: 275, width: 600, maxWidth: '100%', mt: 3, background: 'white' }}
               >
                 <CardContent style={{ display: 'flex', flexDirection: 'row' }}>
                   <div style={{ flexGrow: 1 }}>
