@@ -13,33 +13,33 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Typography from '@mui/material/Typography';
 
 // import { getAuth, sendPasswordResetEmail } from 'firebase/auth';
-
 import Meta from '@/components/Meta';
 import Navbar from '@/components/Navbar';
+
 // import firebaseApp from '@/utils/firebase';
 
 function Page1() {
   // const auth = getAuth(firebaseApp);
 
   return (
-      <>
-        <Meta title="reset password" />
-        <Navbar />
-        <Container>
-          <CssBaseline />
-          <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-              }}
-          >
-            <Typography component="h1" variant="h5">
-              Therapists
-            </Typography>
-          </Box>
-        </Container>
-      </>
+    <>
+      <Meta title="reset password" />
+      <Navbar />
+      <Container>
+        <CssBaseline />
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <Typography component="h1" variant="h5">
+            Licensed Therapists
+          </Typography>
+        </Box>
+      </Container>
+    </>
   );
 }
 

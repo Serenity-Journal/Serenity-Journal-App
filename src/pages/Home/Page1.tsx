@@ -3,6 +3,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { TextareaAutosize } from '@mui/material';
 // import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
+// import IconButton from "@mui/material/IconButton";
+// import Avatar from "@mui/material/Avatar";
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+// import Box from "@mui/material/Box";
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 
 import { User } from '@firebase/auth';
@@ -66,6 +72,8 @@ function hexToRgb(hex: string): RGB {
       };
 }
 
+const settings = ['Delete'];
+
 function Page1() {
   // const db = getFirestore(firebaseApp);
   const db = getFirestore(firebaseApp);
@@ -78,6 +86,40 @@ function Page1() {
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const [isMobileStyle, setIsMobileStyle] = useState<boolean>(true);
   const [dateCreated, setDateCreated] = useState<Date>(new Date(Date.now()));
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
+
+  const deleteJournal = (journal: Journal, chatGPTResponseJournal: Journal) => {
+    setSending(true);
+    try {
+      const x = async () => {
+        await deleteDoc(doc(db, 'journal', journal.id));
+        if (chatGPTResponseJournal) {
+          await deleteDoc(doc(db, 'journal', chatGPTResponseJournal.id));
+        }
+      };
+      x()
+        .then(() => {
+          setSending(false);
+        })
+        .catch((e) => {
+          setSending(false);
+          console.error(e);
+          alert('Unable to delete journal, please try again later');
+        });
+    } catch (e) {
+      setSending(false);
+      console.error(e);
+      alert('Unable to delete journal, please try again later');
+    }
+  };
 
   useEffect(() => {
     if (text) {
@@ -278,42 +320,55 @@ function Page1() {
                           >
                             {formatDate(new Date(journal.createdAt))}
                           </Typography>
-                          <div
-                            style={{
-                              width: '10px',
-                              height: '10px',
-                              borderRadius: '100%',
-                              background: journal.color,
-                            }}
-                            onClick={() => {
-                              if (confirm('Delete journal and analysis?')) {
-                                setSending(true);
-                                try {
-                                  const x = async () => {
-                                    await deleteDoc(doc(db, 'journal', journal.id));
-                                    if (chatGPTResponseJournal) {
-                                      await deleteDoc(
-                                        doc(db, 'journal', chatGPTResponseJournal.id),
-                                      );
+                          <div>
+                            <Tooltip title="Options">
+                              <div
+                                style={{
+                                  width: '10px',
+                                  height: '10px',
+                                  borderRadius: '100%',
+                                  background: journal.color,
+                                }}
+                                onClick={handleOpenUserMenu}
+                              ></div>
+                            </Tooltip>
+                            <Menu
+                              sx={{
+                                mt: '15px',
+                                color: '#814f45',
+                              }}
+                              id="menu-appbar"
+                              anchorEl={anchorElUser}
+                              anchorOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                              }}
+                              keepMounted
+                              transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                              }}
+                              open={Boolean(anchorElUser)}
+                              onClose={handleCloseUserMenu}
+                            >
+                              {settings.map((setting) => (
+                                <MenuItem
+                                  key={setting}
+                                  onClick={() => {
+                                    if (setting === 'Delete') {
+                                      // delete journal
+                                      deleteJournal(journal, chatGPTResponseJournal);
+                                      handleCloseUserMenu();
+                                    } else {
+                                      alert('Unknown action to take for journal');
                                     }
-                                  };
-                                  x()
-                                    .then(() => {
-                                      setSending(false);
-                                    })
-                                    .catch((e) => {
-                                      setSending(false);
-                                      console.error(e);
-                                      alert('Unable to delete journal, please try again later');
-                                    });
-                                } catch (e) {
-                                  setSending(false);
-                                  console.error(e);
-                                  alert('Unable to delete journal, please try again later');
-                                }
-                              }
-                            }}
-                          ></div>
+                                  }}
+                                >
+                                  <Typography textAlign="center">{setting}</Typography>
+                                </MenuItem>
+                              ))}
+                            </Menu>
+                          </div>
                         </div>
                         <div
                           id={journal.createdAt.toString()}
