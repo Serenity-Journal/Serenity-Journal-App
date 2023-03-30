@@ -20,6 +20,15 @@ import Typography from '@mui/material/Typography';
 
 import { User } from '@firebase/auth';
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getFirestore,
+  onSnapshot,
+  query,
+  where,
+} from 'firebase/firestore';
 
 import firebaseApp from '@/utils/firebase';
 
@@ -34,11 +43,18 @@ const pages: PagesMap = {
   'Mood Tracker': 'mood-tracker',
   Therapists: 'therapists',
 };
-const settings = ['Logout'];
+const settings = ['Logout', 'Clear Data'];
+
+// interface JournalCache {
+//     userID: string,
+//     key: string,
+//     value: string,
+// }
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const db = getFirestore(firebaseApp);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -229,14 +245,44 @@ function ResponsiveAppBar() {
                   <MenuItem
                     key={setting}
                     onClick={() => {
-                      signOut(auth)
-                        .then(() => {
-                          location.href = '/';
-                        })
-                        .catch((error) => {
-                          alert('Error signing out');
-                          console.error(error);
-                        });
+                      if (setting === 'Logout') {
+                        signOut(auth)
+                          .then(() => {
+                            location.href = '/';
+                          })
+                          .catch((error) => {
+                            alert('Error signing out');
+                            console.error(error);
+                          });
+                      } else if (setting === 'Clear Data') {
+                        // delete all cached responses for this user
+                        const x = async () => {
+                          const journalCacheRef = query(
+                            collection(db, 'journal-cache'),
+                            where('userID', '==', user?.uid),
+                          );
+                          onSnapshot(journalCacheRef, (snapshot) => {
+                            snapshot.docs.forEach((docy) => {
+                              deleteDoc(doc(db, 'journal-cache', docy.id));
+                            });
+                          });
+                        };
+                        x()
+                          .then(() => {
+                            alert('Successfully deleted all cached data');
+                          })
+                          .catch((e) => {
+                            console.error('Unsuccessful at deleting cached data', e);
+                          });
+                        // var jobskill_query = db.collection('job_skills').where('userID', '==', user.uid);
+                        // jobskill_query.get().then(function(querySnapshot) {
+                        //     querySnapshot.forEach(function(doc) {
+                        //         doc.ref.delete();
+                        //     });
+                        // });
+                      } else {
+                        alert('Unknown setting chosen');
+                      }
                     }}
                   >
                     <Typography textAlign="center">{setting}</Typography>
