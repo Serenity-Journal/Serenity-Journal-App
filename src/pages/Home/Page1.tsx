@@ -129,7 +129,7 @@ function Page1() {
       const x = async () => {
         await setDoc(doc(db, 'journal-cache', journal.id), {
           userID: user?.uid || 'no_user_id',
-          key: journal.content,
+          key: journal.content.trim().toLowerCase(),
           value: chatGPTResponseJournal.content,
         });
       };
