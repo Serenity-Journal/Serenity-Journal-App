@@ -30,6 +30,7 @@
     "firebase": "^9.18.0",
     "firebase-functions": "^4.2.1",
     "is-mobile": "^3.1.1",
+    "material-ui-image": "^3.3.2",
     "node": "^19.6.1",
     "notistack": "^2.0.5",
     "openai": "^3.2.1",
