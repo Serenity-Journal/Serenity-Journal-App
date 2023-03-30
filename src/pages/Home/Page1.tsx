@@ -41,6 +41,31 @@ interface Journal {
   color: string;
 }
 
+interface RGB {
+  r: number;
+  g: number;
+  b: number;
+}
+
+function rgbToString(rgb: RGB, alpha: number) {
+  return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
+}
+
+function hexToRgb(hex: string): RGB {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
+      }
+    : {
+        r: 0,
+        g: 0,
+        b: 0,
+      };
+}
+
 function Page1() {
   // const db = getFirestore(firebaseApp);
   const db = getFirestore(firebaseApp);
@@ -79,7 +104,7 @@ function Page1() {
 
   useEffect(() => {
     if (user) {
-      const colorBank = ['#729EA1', '#B5BD89', '#EC9192', '#DFBE99', '#5D675B'];
+      const colorBank = ['#729ea1', '#B5BD89', '#EC9192', '#DFBE99', '#5D675B'];
       const colRef = query(collection(db, 'journal'), where('user.uid', '==', user?.uid));
       onSnapshot(colRef, (snapshot) => {
         let newJournals: Array<Journal> = [];
@@ -391,10 +416,15 @@ function Page1() {
                           {chatGPTResponseJournal && (
                             <p
                               style={{
-                                background: 'rgba(255,255,255,0.27)',
+                                // background: 'rgba(255,255,255,0.27)',
+                                // background: journal.color,
+                                borderRadius: '10px',
+                                padding: '10px',
+                                // background: 'rgba(181,189,137,0.5)',
+                                background: `${rgbToString(hexToRgb(journal.color), 0.3)}`,
                                 width: isMobileStyle ? '100%' : '400px',
                                 marginTop: '0',
-                                textDecoration: 'underline',
+                                // textDecoration: 'underline',
                                 textDecorationColor: journal.color,
                                 textDecorationThickness: '2px',
                               }}
