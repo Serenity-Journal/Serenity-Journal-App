@@ -3,6 +3,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { TextareaAutosize } from '@mui/material';
 // import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
+// import IconButton from "@mui/material/IconButton";
+// import Avatar from "@mui/material/Avatar";
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+// import Box from "@mui/material/Box";
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 
 import { User } from '@firebase/auth';
@@ -15,6 +21,7 @@ import {
   getFirestore,
   onSnapshot,
   query,
+  setDoc,
   where,
 } from 'firebase/firestore';
 
@@ -41,6 +48,33 @@ interface Journal {
   color: string;
 }
 
+interface RGB {
+  r: number;
+  g: number;
+  b: number;
+}
+
+function rgbToString(rgb: RGB, alpha: number) {
+  return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
+}
+
+function hexToRgb(hex: string): RGB {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
+      }
+    : {
+        r: 0,
+        g: 0,
+        b: 0,
+      };
+}
+
+const settings = ['Delete', 'Cache'];
+
 function Page1() {
   // const db = getFirestore(firebaseApp);
   const db = getFirestore(firebaseApp);
@@ -53,6 +87,68 @@ function Page1() {
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const [isMobileStyle, setIsMobileStyle] = useState<boolean>(true);
   const [dateCreated, setDateCreated] = useState<Date>(new Date(Date.now()));
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
+
+  const deleteJournal = (journal: Journal, chatGPTResponseJournal: Journal) => {
+    setSending(true);
+    try {
+      const x = async () => {
+        await deleteDoc(doc(db, 'journal', journal.id));
+        if (chatGPTResponseJournal) {
+          await deleteDoc(doc(db, 'journal', chatGPTResponseJournal.id));
+        }
+      };
+      x()
+        .then(() => {
+          setSending(false);
+          handleCloseUserMenu();
+        })
+        .catch((e) => {
+          setSending(false);
+          console.error(e);
+          alert('Unable to delete journal, please try again later');
+        });
+    } catch (e) {
+      setSending(false);
+      console.error(e);
+      alert('Unable to delete journal, please try again later');
+    }
+  };
+
+  const cacheJournalResponse = (journal: Journal, chatGPTResponseJournal: Journal) => {
+    setSending(true);
+    try {
+      const x = async () => {
+        await setDoc(doc(db, 'journal-cache', journal.id), {
+          userID: user?.uid || 'no_user_id',
+          key: journal.content.trim().toLowerCase(),
+          value: chatGPTResponseJournal.content,
+        });
+      };
+      x()
+        .then(() => {
+          setSending(false);
+          handleCloseUserMenu();
+        })
+        .catch((e) => {
+          setSending(false);
+          console.error(e);
+          alert('Unable to cache journal, please try again later');
+        });
+    } catch (e) {
+      setSending(false);
+      console.error(e);
+      alert('Unable to delete journal, please try again later');
+    }
+  };
 
   useEffect(() => {
     if (text) {
@@ -79,7 +175,7 @@ function Page1() {
 
   useEffect(() => {
     if (user) {
-      const colorBank = ['#729EA1', '#B5BD89', '#EC9192', '#DFBE99', '#5D675B'];
+      const colorBank = ['#729ea1', '#B5BD89', '#EC9192', '#DFBE99', '#5D675B'];
       const colRef = query(collection(db, 'journal'), where('user.uid', '==', user?.uid));
       onSnapshot(colRef, (snapshot) => {
         let newJournals: Array<Journal> = [];
@@ -253,42 +349,59 @@ function Page1() {
                           >
                             {formatDate(new Date(journal.createdAt))}
                           </Typography>
-                          <div
-                            style={{
-                              width: '10px',
-                              height: '10px',
-                              borderRadius: '100%',
-                              background: journal.color,
-                            }}
-                            onClick={() => {
-                              if (confirm('Delete journal and analysis?')) {
-                                setSending(true);
-                                try {
-                                  const x = async () => {
-                                    await deleteDoc(doc(db, 'journal', journal.id));
-                                    if (chatGPTResponseJournal) {
-                                      await deleteDoc(
-                                        doc(db, 'journal', chatGPTResponseJournal.id),
-                                      );
+                          <div>
+                            <Tooltip title="Options">
+                              <div
+                                style={{
+                                  width: '10px',
+                                  height: '10px',
+                                  borderRadius: '100%',
+                                  background: journal.color,
+                                }}
+                                onClick={handleOpenUserMenu}
+                              ></div>
+                            </Tooltip>
+                            <Menu
+                              sx={{
+                                mt: '15px',
+                                color: '#814f45',
+                              }}
+                              id="menu-appbar"
+                              anchorEl={anchorElUser}
+                              anchorOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                              }}
+                              keepMounted
+                              transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                              }}
+                              open={Boolean(anchorElUser)}
+                              onClose={handleCloseUserMenu}
+                            >
+                              {settings.map((setting) => (
+                                <MenuItem
+                                  key={setting}
+                                  onClick={() => {
+                                    if (setting === 'Delete') {
+                                      // delete journal
+                                      deleteJournal(journal, chatGPTResponseJournal);
+                                      handleCloseUserMenu();
+                                    } else if (setting === 'Cache') {
+                                      // cache journal response
+                                      cacheJournalResponse(journal, chatGPTResponseJournal);
+                                      handleCloseUserMenu();
+                                    } else {
+                                      alert('Unknown action to take for journal');
                                     }
-                                  };
-                                  x()
-                                    .then(() => {
-                                      setSending(false);
-                                    })
-                                    .catch((e) => {
-                                      setSending(false);
-                                      console.error(e);
-                                      alert('Unable to delete journal, please try again later');
-                                    });
-                                } catch (e) {
-                                  setSending(false);
-                                  console.error(e);
-                                  alert('Unable to delete journal, please try again later');
-                                }
-                              }
-                            }}
-                          ></div>
+                                  }}
+                                >
+                                  <Typography textAlign="center">{setting}</Typography>
+                                </MenuItem>
+                              ))}
+                            </Menu>
+                          </div>
                         </div>
                         <div
                           id={journal.createdAt.toString()}
@@ -391,10 +504,15 @@ function Page1() {
                           {chatGPTResponseJournal && (
                             <p
                               style={{
-                                background: 'rgba(255,255,255,0.27)',
+                                // background: 'rgba(255,255,255,0.27)',
+                                // background: journal.color,
+                                borderRadius: '10px',
+                                padding: '10px',
+                                // background: 'rgba(181,189,137,0.5)',
+                                background: `${rgbToString(hexToRgb(journal.color), 0.3)}`,
                                 width: isMobileStyle ? '100%' : '400px',
                                 marginTop: '0',
-                                textDecoration: 'underline',
+                                // textDecoration: 'underline',
                                 textDecorationColor: journal.color,
                                 textDecorationThickness: '2px',
                               }}

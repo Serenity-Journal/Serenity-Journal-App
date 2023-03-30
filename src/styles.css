@@ -42,6 +42,10 @@ button {
   /*font-family: 'Playfair Display', serif !important;*/
 }
 
+.playFairText {
+  font-family: 'Playfair Display', serif !important;
+}
+
 .MuiFormLabel-root {
   color: black !important;
 }

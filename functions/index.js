@@ -108,6 +108,28 @@ app.post('/journal', async function (request, response) {
         }
     }
 
+    // update chatGPTResponse to use cached response if it exists
+    const userId = newMessageData?.user?.uid || 'no_user_id';
+    try {
+        const journalCacheRef = firebase.db.collection('journal-cache');
+        const cachedJournalsSnapshot = await journalCacheRef.where("userID", "==", userId.toString())
+                                                            .where("key", "==", newMessageData.content.trim().toLowerCase()).get();
+        if (cachedJournalsSnapshot.empty) {
+            console.log('No cached journal found');
+        } else {
+            cachedJournalsSnapshot.forEach(doc => {
+                const cachedResponse = doc?.data()?.value;
+                if (cachedResponse) {
+                    chatGPTResponse = cachedResponse;
+                }
+            });
+            console.log('Successfully retrieved cached journal response');
+        }
+    } catch (e) {
+        console.error('Error retrieving cached response', e);
+    }
+
+    // add responses to database
     try {
         await firebase.db.collection('journal').doc(currentTime.toString() + '.0u').set(newMessageData);
         if (chatGPTResponse) {

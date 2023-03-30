@@ -58,6 +58,12 @@ const Page1 = memo(() => {
     });
   }, [auth]);
 
+  // Graph Stuff
+  const getTodayFormatted = (): string => {
+    const currentTime = Math.floor(new Date(Date.now()).getTime());
+    return formatDate(currentTime);
+  };
+
   useEffect(() => {
     if (user) {
       const colRef = query(collection(db, 'mood'), where('uid', '==', user?.uid));
@@ -93,12 +99,6 @@ const Page1 = memo(() => {
     } else {
       alert('Journal entry cannot be blank');
     }
-  };
-
-  // Graph Stuff
-  const getTodayFormatted = (): string => {
-    const currentTime = Math.floor(new Date(Date.now()).getTime());
-    return formatDate(currentTime);
   };
 
   const formatDate = (createdAt: number): string => {
@@ -179,11 +179,12 @@ const Page1 = memo(() => {
               height: '100%',
             }}
           >
-            <Typography variant='h6' component='legend'>{`Today's Mood`}</Typography>
+            <Typography variant='h6' component='legend' className={'playFairText'}>{`Today's Mood`}</Typography>
             <StyledRating
+                sx={{ mt: 2 }}
               name='highlight-selected-only'
               value={rating}
-              onChange={(event: any, newValue: React.SetStateAction<number | null>) => {
+              onChange={(event, newValue: React.SetStateAction<number | null>) => {
                 setRating(newValue);
               }}
               IconContainerComponent={IconContainer}
@@ -191,7 +192,7 @@ const Page1 = memo(() => {
               highlightSelectedOnly
               size='large'
             />
-            <Button variant='contained' type='submit' sx={{ mt: 6 }} onClick={submitMoodRating}>Update Mood For
+            <Button variant='contained' type='submit' sx={{ mt: 3 }} onClick={submitMoodRating}>Update Mood For
               Today</Button>
 
             { /* Add Line Chart */}

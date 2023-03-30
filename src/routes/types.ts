@@ -10,6 +10,7 @@ enum Pages {
   Home,
   NotFound,
   MoodTracker ,
+  Therapists,
 }
 
 type PathRouteCustomProps = {
