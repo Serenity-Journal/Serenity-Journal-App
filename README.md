@@ -48,10 +48,7 @@ yarn serve
 Run the following terminal commands:
 
 ```shell
-# deploy website
-yarn deploy
-# deploy server
-cd functions
+# deploy website and server
 yarn deploy
 ```
 
