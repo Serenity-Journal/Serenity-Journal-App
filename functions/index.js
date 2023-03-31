@@ -112,10 +112,10 @@ app.post('/journal', async function (request, response) {
     const userId = newMessageData?.user?.uid || 'no_user_id';
     try {
         const journalCacheRef = firebase.db.collection('journal-cache');
-        const cachedJournalsSnapshot = await journalCacheRef.where("userID", "==", userId.toString())
-            .where("key", "==", newMessageData.content).get();
         // const cachedJournalsSnapshot = await journalCacheRef.where("userID", "==", userId.toString())
-        //                                                     .where("key", "==", newMessageData.content.trim().toLowerCase()).get();
+        //     .where("key", "==", newMessageData.content).get();
+        const cachedJournalsSnapshot = await journalCacheRef.where("userID", "==", userId.toString())
+                                                            .where("key", "==", newMessageData.content.replace(/\s+/g, "").toLowerCase()).get();
         if (cachedJournalsSnapshot.empty) {
             console.log('No cached journal found');
         } else {
@@ -133,6 +133,8 @@ app.post('/journal', async function (request, response) {
 
     // add responses to database
     try {
+        // print newMessageDataContent
+        console.log('newMessageDataContent', newMessageData.content);
         await firebase.db.collection('journal').doc(currentTime.toString() + '.0u').set(newMessageData);
         if (chatGPTResponse) {
             const chatGPTMessageData = {

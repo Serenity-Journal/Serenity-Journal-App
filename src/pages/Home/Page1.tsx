@@ -130,7 +130,9 @@ function Page1() {
         await setDoc(doc(db, 'journal-cache', journal.id), {
           userID: user?.uid || 'no_user_id',
           // key: journal.content.trim().toLowerCase(),
-          key: journal.content,
+          // key: journal.content,
+          // IMPORTANT: Encode newlines in content as %0A
+          key: journal.content.replace(/\s+/g, "").toLowerCase(),
           value: chatGPTResponseJournal.content,
         });
       };
@@ -183,6 +185,10 @@ function Page1() {
         snapshot.docs.forEach((doc) => {
           const journalData = doc.data();
           journalData.id = doc?.id || 'no id';
+          // Important: Decode %0A in content as newlines
+          journalData.content = journalData.content.replace(/%0A/g, '\n');
+          console.log(journalData.content);
+
           newJournals.push(journalData as Journal);
           journalData.color =
             colorBank.length > 0 ? colorBank[newJournals.length % colorBank.length] : '#729EA1';
@@ -239,7 +245,8 @@ function Page1() {
       const postData: Journal = {
         user: user as JournalUser,
         title: title,
-        content: text,
+        // Important: Encode newlines in content as %0A
+        content: text.replace(/\n/g, '%0A'),
         role: 'user',
         createdAt: currentTime,
         updatedAt: currentTime,
@@ -413,7 +420,12 @@ function Page1() {
                             background: 'rgba(255,255,255,0)',
                           }}
                         >
-                          <p style={{ flexGrow: isMobileStyle ? 0 : 1 }}>{journal.content}</p>
+                          {/*<p style={{ flexGrow: isMobileStyle ? 0 : 1 }}>{journal.content}</p>*/}
+                          <div>
+                            {journal.content.split(/\n\s*\n/).map((paragraph, index) => (
+                              <p key={index}>{paragraph}</p>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     );
