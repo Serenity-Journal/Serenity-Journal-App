@@ -113,7 +113,9 @@ app.post('/journal', async function (request, response) {
     try {
         const journalCacheRef = firebase.db.collection('journal-cache');
         const cachedJournalsSnapshot = await journalCacheRef.where("userID", "==", userId.toString())
-                                                            .where("key", "==", newMessageData.content.trim().toLowerCase()).get();
+            .where("key", "==", newMessageData.content).get();
+        // const cachedJournalsSnapshot = await journalCacheRef.where("userID", "==", userId.toString())
+        //                                                     .where("key", "==", newMessageData.content.trim().toLowerCase()).get();
         if (cachedJournalsSnapshot.empty) {
             console.log('No cached journal found');
         } else {
